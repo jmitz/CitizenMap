@@ -2,10 +2,12 @@
 <html>
   <head>
     <title><%= pkg.name %></title>
-
     <link rel="stylesheet" type="text/css" href="<%= css %>" media="all" />
+    <link rel="shortcut icon" href="/favicon.ico" />
   </head>
   <body>
+  	<div id="divMap"></div>
+  	<div id="divTools"></div>
     <script type="text/javascript" src="<%= js %>"></script>
   </body>
 </html>
