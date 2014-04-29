@@ -15,7 +15,9 @@ module.exports = function(lineman) {
      js: {
        vendor: [
          "vendor/js/leaflet-src.js",
+         "vendor/js/leaflet.markercluster-src.js",
          "vendor/js/esri-leaflet-src.js",
+         "vendor/js/cluster-feature-layer.js",
          "vendor/js/underscore.js",
          "vendor/js/**/*.js"
        ]
