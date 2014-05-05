@@ -12,7 +12,7 @@ citizenMap.actionLayers = [
 		//url: 'http://services1.arcgis.com/qI0WaD4k85ljbKGT/arcgis/rest/services/Medicine_Disposal_Locations/FeatureServer/0',
 		url: 'http://epa084dgis01.iltest.illinois.gov:6080/arcgis/rest/services/Mitzelfelt/CitizenPrograms/FeatureServer/0',
 		bindMarker: function(geojson, marker){
-			marker.bindPopup("<h3>Mecical "+geojson.properties.Name+"</h3><p>"+geojson.properties.Address+"<br>"+ geojson.properties.City+",  IL</p><p>"+geojson.properties.Telephone+"</p>");
+			marker.bindPopup("<h3>Medical "+geojson.properties.Name+"</h3><p>"+geojson.properties.Address+"<br>"+ geojson.properties.City+",  IL</p><p>"+geojson.properties.Telephone+"</p>");
 		},
 		createMarker: function(geojson, latlng){
 			return L.marker(latlng, {icon: L.icon({
@@ -49,9 +49,13 @@ citizenMap.actionLayers = [
 			marker.bindPopup("<h3>Hazardous " + geojson.properties.sponsor + "</h3><p>" + geojson.properties.address + "<br>" + geojson.properties.city + ",  IL</p><p>" + geojson.properties.date + "</p>");
 		},
 		createMarker: function(geojson, latlng){
+			iconUrls = [
+				'img/householdhazardpin.png',
+				'img/householdhazardeventpin.png'
+			];
 			return L.marker(latlng, {icon: L.icon({
-				iconUrl: 'img/householdhazardpin.png',
-				iconRetinaUrl: 'img/householdhazardpin.png',
+				iconUrl: iconUrls[geojson.properties.type],
+				iconRetinaUrl: iconUrls[geojson.properties.type],
 				iconSize: [32, 37],
 				iconAncor: [16, 37],
 				popupAncor:[0, -11]
@@ -66,9 +70,14 @@ citizenMap.actionLayers = [
 			marker.bindPopup("<h3>VIM "+geojson.properties.name+"</h3><p>"+geojson.properties.address+"<br>"+ geojson.properties.city+",  IL</p><p>"+geojson.properties.telephone+"</p><p>"+geojson.properties.operationHours + "</p>");
 		},
 		createMarker: function(geojson, latlng){
+			iconUrls = [
+				'img/bluevehiclepin.png',
+				'img/greenvehiclepin.png',
+				'img/yellowvehiclepin.png'
+			];
 			return L.marker(latlng, {icon: L.icon({
-				iconUrl: 'img/bluevehiclepin.png',
-				iconRetinaUrl: 'img/bluevehiclepin.png',
+				iconUrl: iconUrls[geojson.properties.type - 1],
+				iconRetinaUrl: iconUrls[geojson.properties.type - 1],
 				iconSize: [32, 37],
 				iconAncor: [16, 37],
 				popupAncor:[0, -11]
@@ -90,26 +99,33 @@ citizenMap.maskLayer = new L.esri.DynamicMapLayer(citizenMap.maskUrl,{
 
 // Set up Action Layers
 
+citizenMap.markers = new L.MarkerClusterGroup();
+// Multiple cluster layers added to map
 citizenMap.featureLayers = [
 	new L.esri.ClusteredFeatureLayer(citizenMap.actionLayers[0].url,{
-		cluster: new L.MarkerClusterGroup(),
+		// cluster: new L.MarkerClusterGroup(),
+		cluster: citizenMap.markers,
 		createMarker: citizenMap.actionLayers[0].createMarker,
 		onEachMarker: citizenMap.actionLayers[0].bindMarker
 	}).addTo(citizenMap.map),
 	new L.esri.ClusteredFeatureLayer(citizenMap.actionLayers[1].url,{
-		cluster: new L.MarkerClusterGroup(),
+		// cluster: new L.MarkerClusterGroup(),
+		cluster: citizenMap.markers,
 		createMarker: citizenMap.actionLayers[1].createMarker,
 		onEachMarker: citizenMap.actionLayers[1].bindMarker
 	}).addTo(citizenMap.map),
 	new L.esri.ClusteredFeatureLayer(citizenMap.actionLayers[2].url,{
-		cluster: new L.MarkerClusterGroup(),
+		// cluster: new L.MarkerClusterGroup(),
+		cluster: citizenMap.markers,
 		createMarker: citizenMap.actionLayers[2].createMarker,
 		onEachMarker: citizenMap.actionLayers[2].bindMarker
 	}).addTo(citizenMap.map),
 	new L.esri.ClusteredFeatureLayer(citizenMap.actionLayers[3].url,{
-		cluster: new L.MarkerClusterGroup(),
+		// cluster: new L.MarkerClusterGroup(),
+		cluster: citizenMap.markers,
 		createMarker: citizenMap.actionLayers[3].createMarker,
 		onEachMarker: citizenMap.actionLayers[3].bindMarker
 	}).addTo(citizenMap.map)
-	];
+];
 
+// Single cluster layer added to map
