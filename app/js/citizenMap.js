@@ -2,10 +2,44 @@
 L.Icon.Default.imagePath = '/img/leaflet/';
 citizenMap = {};
 citizenMap.div = 'divMap';
-citizenMap.baseMapNames = [
-	'Topographic',
-	'Sattelite'];
-citizenMap.maskUrl = 'http://geoservices.epa.illinois.gov/ArcGIS/rest/services/SWAP/Location/MapServer'
+
+citizenMap.map = L.map('divMap').setView([40, -89.5],7);
+
+citizenMap.baseMap = {
+	baseMapLayers: {
+		street: [new L.esri.BasemapLayer('Topographic')],
+		satellite: [
+			new L.esri.BasemapLayer('Imagery'),
+			new L.esri.BasemapLayer('ImageryLabels'),
+			new L.esri.BasemapLayer('ImageryTransportation')
+		]
+	},
+	current: 'street',
+//	layer: L.esri.basemapLayer(citizenMap.baseMap.baseMapLayers.street[0]),
+	addBaseMap: function(){
+		citizenMap.baseMap.addBaseMapArray(citizenMap.baseMap.baseMapLayers[citizenMap.baseMap.current]);
+	},
+	addBaseMapArray: function(inArray){
+		var index;
+		for(index = 0; index < inArray.length; ++index){
+			citizenMap.map.addLayer(inArray[index]);
+		}
+	},
+	removeBaseMapArray: function(inArray){
+		var index;
+		for(index = 0; index < inArray.length; ++index){
+			citizenMap.map.removeLayer(inArray[index]);
+		}
+	},
+	switchMap: function(){
+		citizenMap.baseMap.removeBaseMapArray(citizenMap.baseMap.baseMapLayers[citizenMap.baseMap.current]);
+		citizenMap.baseMap.current = (citizenMap.baseMap.current === 'street')?'satellite':'street';
+		citizenMap.baseMap.addBaseMapArray(citizenMap.baseMap.baseMapLayers[citizenMap.baseMap.current]);
+	}
+};
+
+
+citizenMap.maskUrl = 'http://geoservices.epa.illinois.gov/ArcGIS/rest/services/SWAP/Location/MapServer';
 citizenMap.actionLayers = [
 	{
 		name:'Medical Disposal Sites',
@@ -87,45 +121,37 @@ citizenMap.actionLayers = [
 ];
 
 
-citizenMap.map = L.map('divMap').setView([40, -89.5],7);
-
 
 // Set up Base Mapp
-citizenMap.baseLayer = new L.esri.BasemapLayer(citizenMap.baseMapNames[0]).addTo(citizenMap.map);
+citizenMap.baseMap.addBaseMap();
 citizenMap.maskLayer = new L.esri.DynamicMapLayer(citizenMap.maskUrl,{
-	opacity:.75,
+	opacity: 0.75,
 	layers: [10, 11]
 }).addTo(citizenMap.map);
 
 // Set up Action Layers
 
 citizenMap.markers = new L.MarkerClusterGroup();
-// Multiple cluster layers added to map
+
 citizenMap.featureLayers = [
 	new L.esri.ClusteredFeatureLayer(citizenMap.actionLayers[0].url,{
-		// cluster: new L.MarkerClusterGroup(),
 		cluster: citizenMap.markers,
 		createMarker: citizenMap.actionLayers[0].createMarker,
 		onEachMarker: citizenMap.actionLayers[0].bindMarker
 	}).addTo(citizenMap.map),
 	new L.esri.ClusteredFeatureLayer(citizenMap.actionLayers[1].url,{
-		// cluster: new L.MarkerClusterGroup(),
 		cluster: citizenMap.markers,
 		createMarker: citizenMap.actionLayers[1].createMarker,
 		onEachMarker: citizenMap.actionLayers[1].bindMarker
 	}).addTo(citizenMap.map),
 	new L.esri.ClusteredFeatureLayer(citizenMap.actionLayers[2].url,{
-		// cluster: new L.MarkerClusterGroup(),
 		cluster: citizenMap.markers,
 		createMarker: citizenMap.actionLayers[2].createMarker,
 		onEachMarker: citizenMap.actionLayers[2].bindMarker
 	}).addTo(citizenMap.map),
 	new L.esri.ClusteredFeatureLayer(citizenMap.actionLayers[3].url,{
-		// cluster: new L.MarkerClusterGroup(),
 		cluster: citizenMap.markers,
 		createMarker: citizenMap.actionLayers[3].createMarker,
 		onEachMarker: citizenMap.actionLayers[3].bindMarker
 	}).addTo(citizenMap.map)
 ];
-
-// Single cluster layer added to map
