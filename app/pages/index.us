@@ -7,10 +7,12 @@
     <link rel="shortcut icon" href="/favicon.ico" />
   </head>
   <body>
-  	<div id="divMap"></div>
-  	<div id="divTools">
-     <a href="#" onclick='citizenMap.baseMap.switchMap()'>Switch Map</a> 
+    <div class="row-fluid" id="divMapHolder">
+  	 <div class="span10" id="divMap"></div>
+  	 <div class="span2" id="divTools">
+      <a href="#" onclick='citizenMap.baseMap.switchMap()'>Switch Map</a> 
+      </div>
     </div>
     <script type="text/javascript" src="<%= js %>"></script>
   </body>
-</html>
+</html

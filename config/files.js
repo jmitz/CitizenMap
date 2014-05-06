@@ -18,6 +18,8 @@ module.exports = function(lineman) {
          'vendor/js/leaflet.markercluster-src.js',
          'vendor/js/esri-leaflet-src.js',
          'vendor/js/cluster-feature-layer.js',
+         'vendor/js/jquery-2.1.1.js',
+         'vendor/js/bootstrap.js',
          'vendor/js/underscore.js',
          'vendor/js/**/*.js'
        ]
