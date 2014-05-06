@@ -40,7 +40,7 @@ citizenMap.baseMap = {
 
 
 citizenMap.maskUrl = 'http://geoservices.epa.illinois.gov/ArcGIS/rest/services/SWAP/Location/MapServer';
-citizenMap.actionLayers = [
+citizenMap.featureLayerInfos = [
 	{
 		name:'Medical Disposal Sites',
 		//url: 'http://services1.arcgis.com/qI0WaD4k85ljbKGT/arcgis/rest/services/Medicine_Disposal_Locations/FeatureServer/0',
@@ -53,8 +53,8 @@ citizenMap.actionLayers = [
 				iconUrl: 'img/medicalwastepin.png',
 				iconRetinaUrl: 'img/medicalwastepin.png',
 				iconSize: [32, 37],
-				iconAncor: [16, 37],
-				popupAncor:[0, -11]
+				iconAnchor: [16, 37],
+				popupAnchor:[0, -27]
 			})});
 		}
 	},
@@ -70,8 +70,8 @@ citizenMap.actionLayers = [
 				iconUrl: 'img/ewasteeventpin.png',
 				iconRetinaUrl: 'img/ewasteeventpin.png',
 				iconSize: [32, 37],
-				iconAncor: [16, 37],
-				popupAncor:[0, -11]
+				iconAnchor: [16, 37],
+				popupAnchor:[0, -27]
 			})});
 		}
 	},
@@ -91,8 +91,8 @@ citizenMap.actionLayers = [
 				iconUrl: iconUrls[geojson.properties.type],
 				iconRetinaUrl: iconUrls[geojson.properties.type],
 				iconSize: [32, 37],
-				iconAncor: [16, 37],
-				popupAncor:[0, -11]
+				iconAnchor: [16, 37],
+				popupAnchor:[0, -27]
 			})});
 		}
 	},
@@ -113,8 +113,8 @@ citizenMap.actionLayers = [
 				iconUrl: iconUrls[geojson.properties.type - 1],
 				iconRetinaUrl: iconUrls[geojson.properties.type - 1],
 				iconSize: [32, 37],
-				iconAncor: [16, 37],
-				popupAncor:[0, -11]
+				iconAnchor: [16, 37],
+				popupAnchor:[0, -27]
 			})});
 		}
 	}
@@ -131,27 +131,24 @@ citizenMap.maskLayer = new L.esri.DynamicMapLayer(citizenMap.maskUrl,{
 
 // Set up Action Layers
 
-citizenMap.markers = new L.MarkerClusterGroup();
+citizenMap.markers = new L.MarkerClusterGroup({
+	disableClusteringAtZoom: 13
+});
 
-citizenMap.featureLayers = [
-	new L.esri.ClusteredFeatureLayer(citizenMap.actionLayers[0].url,{
-		cluster: citizenMap.markers,
-		createMarker: citizenMap.actionLayers[0].createMarker,
-		onEachMarker: citizenMap.actionLayers[0].bindMarker
-	}).addTo(citizenMap.map),
-	new L.esri.ClusteredFeatureLayer(citizenMap.actionLayers[1].url,{
-		cluster: citizenMap.markers,
-		createMarker: citizenMap.actionLayers[1].createMarker,
-		onEachMarker: citizenMap.actionLayers[1].bindMarker
-	}).addTo(citizenMap.map),
-	new L.esri.ClusteredFeatureLayer(citizenMap.actionLayers[2].url,{
-		cluster: citizenMap.markers,
-		createMarker: citizenMap.actionLayers[2].createMarker,
-		onEachMarker: citizenMap.actionLayers[2].bindMarker
-	}).addTo(citizenMap.map),
-	new L.esri.ClusteredFeatureLayer(citizenMap.actionLayers[3].url,{
-		cluster: citizenMap.markers,
-		createMarker: citizenMap.actionLayers[3].createMarker,
-		onEachMarker: citizenMap.actionLayers[3].bindMarker
-	}).addTo(citizenMap.map)
-];
+citizenMap.addFeatureLayers = function(inArray){
+	citizenMap.markers.clearLayers();
+	var index;
+	for(index = 0; index < inArray.length; ++index){
+		citizenMap.loadFeatureLayer(citizenMap.featureLayerInfos[inArray[index]], citizenMap.markers);
+	}
+};
+
+citizenMap.loadFeatureLayer = function(featureLayerInfo, markerLayer){
+	new L.esri.ClusteredFeatureLayer(featureLayerInfo.url,{
+		cluster: markerLayer,
+		createMarker: featureLayerInfo.createMarker,
+		onEachMarker: featureLayerInfo.bindMarker
+	}).addTo(citizenMap.map);
+};
+
+citizenMap.addFeatureLayers([3, 1, 2, 0]);
