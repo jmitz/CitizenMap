@@ -25,3 +25,24 @@ var QueryString = function () {
   } 
     return query_string;
 } ();
+
+legendGroup = $(function($){
+  var group = $('#legend');
+
+  function getActive(){
+    var activeArray = [];
+    $('button', group).each(function(){
+      if ($(this).hasClass('active')){
+        activeArray.push(int$(this).val());
+      }
+    });
+    console.log(activeArray);
+    return activeArray;
+  }
+  $('button', group).each(function(){
+    $(this).on("click", function(){
+        $(this).toggleClass('active');
+        getActive();
+    });
+  });
+});

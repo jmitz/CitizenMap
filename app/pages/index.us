@@ -10,6 +10,12 @@
     <div class="row-fluid" id="divMapHolder">
   	 <div class="span10" id="divMap"></div>
   	 <div class="span2" id="divTools">
+      <div id="legend" class "btn-group btn-group-vertical" data-toggle-name="legend_options">
+        <button type="button" value='0' class="btn btn-block active"><img src='img/medicalwastepin.png'>Medical Waste</button>
+        <button type="button" value='1' class="btn btn-block active"><img src='img/ewastepin.png'>E-Waste</button>
+        <button type="button" value='2' class="btn btn-block active"><img src='img/householdhazardpin.png'>Household Hazardous Waste</button>
+        <button type="button" value='3' class="btn btn-block active"><img src='img/yellowvehiclepin.png'>Vehicle Emmission Testing</button>
+      </div>
       <a href="#" onclick='citizenMap.baseMap.switchMap()'>Switch Map</a> 
       </div>
     </div>
