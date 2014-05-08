@@ -67,7 +67,7 @@ citizenMap.featureLayerInfos = [
 		},
 		createMarker: function(geojson, latlng){
 			return L.marker(latlng, {icon: L.icon({
-				iconUrl: 'img/ewasteeventpin.png',
+				iconUrl: 'img/ewastepin.png',
 				iconRetinaUrl: 'img/ewasteeventpin.png',
 				iconSize: [32, 37],
 				iconAnchor: [16, 37],
@@ -80,7 +80,8 @@ citizenMap.featureLayerInfos = [
 		//url: 'http://epa084pgis02.illinois.gov/arcgis/rest/services/OCR/ewastecollectsites_062613/MapServer',
 		url: 'http://epa084dgis01.iltest.illinois.gov:6080/arcgis/rest/services/Mitzelfelt/CitizenPrograms/FeatureServer/1',
 		bindMarker: function(geojson, marker){
-			marker.bindPopup("<h3>Hazardous " + geojson.properties.sponsor + "</h3><p>" + geojson.properties.address + "<br>" + geojson.properties.city + ",  IL</p><p>" + geojson.properties.date + "</p>");
+			var eventDate = new Date(geojson.properties.date);
+			marker.bindPopup("<h3>Hazardous " + geojson.properties.sponsor + "</h3><p>" + geojson.properties.address + "<br>" + geojson.properties.city + ",  IL</p><p>" + eventDate.toDateString() + "</p>");
 		},
 		createMarker: function(geojson, latlng){
 			iconUrls = [

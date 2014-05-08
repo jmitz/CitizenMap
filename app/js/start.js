@@ -33,16 +33,15 @@ legendGroup = $(function($){
     var activeArray = [];
     $('button', group).each(function(){
       if ($(this).hasClass('active')){
-        activeArray.push(int$(this).val());
+        activeArray.push(parseInt($(this).val(),10));
       }
     });
-    console.log(activeArray);
     return activeArray;
   }
   $('button', group).each(function(){
     $(this).on("click", function(){
         $(this).toggleClass('active');
-        getActive();
+        citizenMap.addFeatureLayers(getActive());
     });
   });
 });
