@@ -45,3 +45,5 @@ legendGroup = $(function($){
     });
   });
 });
+
+L.Icon.Default.imagePath = '/img/leaflet/';
