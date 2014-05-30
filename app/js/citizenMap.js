@@ -125,7 +125,7 @@ var citizenMap = function(){
 
 	var maskLayer = new L.esri.DynamicMapLayer(maskUrl,{
 		opacity: 0.75,
-		layers: [10, 11]
+		layers: [10]
 	}).addTo(map);
 
 	// Set up Action Layers
