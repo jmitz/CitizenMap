@@ -3,22 +3,31 @@
   <head>
     <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
     <title><%= pkg.name %></title>
+    <link rel="stylesheet" href="assets/bootstrap-3.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/leaflet-0.7.3/leaflet.css">
+    <link rel="stylesheet" href="assets/rrose/leaflet.rrose.css">
+    <link rel="stylesheet" href="assets/leaflet-markercluster-0.4.0/MarkerCluster.css">
+    <link rel="stylesheet" href="assets/leaflet-markercluster-0.4.0/MarkerCluster.Default.css">
+    <!--[if lte IE 8]><link rel="stylesheet" href="assets/leaflet-markercluster-0.4.0/MarkerCluster.Default.ie.css"><![endif]-->
+    <!--[if lte IE 9]><link rel="stylesheet" href="assets/leaflet-locatecontrol-0.27.0/L.Control.Locate.ie.css"><![endif]-->
     <link rel="stylesheet" type="text/css" href="<%= css %>" media="all" />
     <link rel="shortcut icon" href="/favicon.ico" />
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="assets/js/html5shiv.js"></script>
+      <script src="assets/js/respond.min.js"></script>
+    <![endif]-->
   </head>
   <body>
-    <div class="row-fluid" id="divMapHolder">
-  	 <div class="span10" id="divMap"></div>
-  	 <div class="span2" id="divTools">
-      <div id="legend" class "btn-group btn-group-vertical" data-toggle-name="legend_options">
-        <button type="button" value='0' class="btn btn-block active"><img src='img/medicalwastepin.png'>Medical Waste</button>
-        <button type="button" value='1' class="btn btn-block active"><img src='img/ewastepin.png'>E-Waste</button>
-        <button type="button" value='2' class="btn btn-block active"><img src='img/householdhazardpin.png'>Household Hazardous Waste</button>
-        <button type="button" value='3' class="btn btn-block active"><img src='img/yellowvehiclepin.png'>Vehicle Emmission Testing</button>
-      </div>
-      <a href="#" onclick='citizenMap.baseMap.switchMap()'>Switch Map</a> 
-      </div>
-    </div>
+  	<div id="divMap"></div>
+    <script src="assets/js/jquery-1.11.0.min.js"></script>
+    <script src="assets/bootstrap-3.1.1/js/bootstrap.min.js"></script>
+    <script src="assets/leaflet-0.7.3/leaflet.js"></script>
+    <script src="assets/esri-leaflet/esri-leaflet.js"></script>
+    <script src="assets/leaflet-groupedlayercontrol/leaflet.groupedlayercontrol.js"></script>
+    <script src="assets/leaflet-markercluster-0.4.0/leaflet.markercluster.js"></script>
+    <script src="assets/esri-leaflet/extras/clustered-feature-layer.js"></script>
+    <script src="assets/rrose/rrose-src.js"></script>
     <script type="text/javascript" src="<%= js %>"></script>
   </body>
 </html

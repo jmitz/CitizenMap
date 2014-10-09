@@ -3,27 +3,18 @@
  *
  * To see the default definitions for Lineman's file paths and globs, see:
  *
- *   - https://github.com/testdouble/lineman/blob/master/config/files.coffee
+ *   - https://github.com/linemanjs/lineman/blob/master/config/files.coffee
  */
 module.exports = function(lineman) {
   //Override file patterns here
   return {
 
-    // As an example, to override the file patterns for
-    // the order in which to load third party JS libs:
-    //
-     js: {
-       vendor: [
-         'vendor/js/leaflet-src.js',
-         'vendor/js/leaflet.markercluster-src.js',
-         'vendor/js/esri-leaflet-src.js',
-         'vendor/js/cluster-feature-layer.js',
-         'vendor/js/jquery-2.1.1.js',
-         'vendor/js/bootstrap.js',
-         'vendor/js/underscore.js',
-         'vendor/js/**/*.js'
-       ]
-     }
+    js: {
+      vendor: [
+        "vendor/js/underscore.js",
+        "vendor/js/**/*.js"
+      ]
+    }
 
   };
 };

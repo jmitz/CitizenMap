@@ -3,19 +3,22 @@
  *
  * You can familiarize yourself with Lineman's defaults by checking out:
  *
- *   - https://github.com/testdouble/lineman/blob/master/config/application.coffee
- *   - https://github.com/testdouble/lineman/blob/master/config/plugins
+ *   - https://github.com/linemanjs/lineman/blob/master/config/application.coffee
+ *   - https://github.com/linemanjs/lineman/blob/master/config/plugins
  *
  * You can also ask Lineman's about config from the command line:
  *
  *   $ lineman config #=> to print the entire config
- *   $ lineman config concat.js #=> to see the JS config for the concat task.
+ *   $ lineman config concat_sourcemap.js #=> to see the JS config for the concat task.
  */
 module.exports = function(lineman) {
   //Override application configuration here. Common examples follow in the comments.
   return {
-
-   
+    server: {
+        web: {
+            port: 7500
+        }
+    }
 
     // API Proxying
     //
@@ -38,7 +41,7 @@ module.exports = function(lineman) {
     // have Ruby installed as well as the `sass` gem. To enable it, comment out the
     // following line:
     //
-    // enableSass: false
+    // enableSass: true
 
     // Asset Fingerprints
     //
@@ -46,7 +49,16 @@ module.exports = function(lineman) {
     // and logging a manifest of logical-to-hashed filenames in dist/assets.json
     // via grunt-asset-fingerprint
     //
-    // enableAssetFingerprint: false
+    // enableAssetFingerprint: true
+
+    // LiveReload
+    //
+    // Lineman can LiveReload browsers whenever a file is changed that results in
+    // assets to be processed, preventing the need to hit F5/Cmd-R every time you
+    // make a change in each browser you're working against. To enable LiveReload,
+    // comment out the following line:
+    //
+    // livereload: true
 
   };
 };

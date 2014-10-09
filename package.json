@@ -1,14 +1,12 @@
 {
-  "name": "-citizen-map",
-  "title": "An HTML/JS/CSS app",
+  "name": "citizen-map",
+  "description": "An HTML/JS/CSS app",
   "version": "0.0.1",
   "private": true,
-  "author": {
-    "name": "John Doe",
-    "company": "ACME, Inc."
-  },
+  "author": "John Doe",
   "devDependencies": {
-    "lineman": "~0.23.2"
+    "lineman": "~0.33.5",
+    "lineman-less": "~0.1.0"
   },
   "scripts": {
     "start": "lineman run",
