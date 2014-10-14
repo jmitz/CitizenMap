@@ -31,7 +31,12 @@ var layers = [
 var citizenMap = function(){
 	var div = 'divMap';
 
-	var map = L.map('divMap').setView([40, -89.5],7);
+	var map = L.map('divMap',{
+		maxZoom: 17,
+		minZoom: 6,
+		center: L.latLng([40, -89.5]),
+		zoom: 7
+	});
 
 	var baseMap = {
 		baseMapLayers: {
@@ -183,10 +188,11 @@ var featureLayerInfos = [{
 
 	function buildGroupedOverlays(){
 		var outGroupedOverlay = {};
-		var layerNameTemplate = "<img src='<%=markerIcon%>' width='24' height='28'>&nbsp;<span title='<%=fullName%>\n<%=getPermitCount(type)%>'><%=name%></span>";
-
+		var layerNameTemplate = "<span title='<%=name%>'><%=name%></span>";
+		outGroupedOverlay.Working = {};
 		for (var j in featureLayerInfos){
-
+			var layerName = _.template(layerNameTemplate,featureLayerInfos[j]);
+			outGroupedOverlay.Working[layerName] = featureLayerInfos[j].testLayer;
 		}
 		return outGroupedOverlay;
 	}
@@ -200,7 +206,8 @@ var featureLayerInfos = [{
 
 	var markers = new L.MarkerClusterGroup({
 		disableClusteringAtZoom: 13
-	});
+	}).addTo(map);
+
 
 	function addFeatureLayers (inArray){
 		markers.clearLayers();
@@ -219,16 +226,49 @@ var featureLayerInfos = [{
 				onEachMarker: featureLayerInfo.bindMarker,
 			});
 		}
-		console.log('Adding Layer');
-		featureLayerInfo.actionLayer.addTo(map);
+		markerLayer.addLayer(featureLayerInfo.actionLayer);
 	}
+
 
 	// Set up Base Mapp
 	baseMap.addBaseMap();
 
-	addFeatureLayers([3, 1, 2, 0]);
+	function updateLayers(){
+		for (var j in featureLayerInfos){
+			if (map.hasLayer(featureLayerInfos[j])){
+				loadFeatureLayer(featureLayerInfos[j], markers);
+			}
+		}
+	}
 
-	var layerControl = L.control.groupedLayers(baseLayers,{
+	//addFeatureLayers([3, 1, 2, 0]);
+
+	map.on('overlayadd', function(e){
+		console.log('Adding Layer');
+		for (var j in featureLayerInfos){
+			if (e.layer === featureLayerInfos[j].testLayer){
+				console.log('Found Layer to Add');
+				loadFeatureLayer(featureLayerInfos[j], markers);
+			}
+		}
+	});
+
+	map.on('overlayremove', function(e){
+		console.log(featureLayerInfos);
+		console.log('Removing Layer');
+		for (var j in featureLayerInfos){
+			if (e.layer === featureLayerInfos[j].testLayer){
+				console.log('Found Layer to Remove');
+				markers._unspiderfy();
+				markers.clearLayers();
+				updateLayers();
+//				markers.removeLayer(featureLayerInfos[j].actionLayer);
+			}
+		}
+	});
+
+
+	var layerControl = L.control.groupedLayers(baseLayers,buildGroupedOverlays(),{
 		collapsed: false,
 		closeButton: true,
 		position: 'topleft'
@@ -237,7 +277,7 @@ var featureLayerInfos = [{
 	layerControl.addTo(map);
 
 	return {
-		addFeatureLayers: addFeatureLayers
+		//addFeatureLayers: addFeatureLayers
 	};
 }();
 
