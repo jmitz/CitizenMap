@@ -205,7 +205,9 @@ var featureLayerInfos = [{
 	// Set up Action Layers
 
 	var markers = new L.MarkerClusterGroup({
-		disableClusteringAtZoom: 13
+		spiderfyOnMaxZoom: true,
+		disableClusteringAtZoom: 13,
+		zoomToBoundsOnClick: true
 	}).addTo(map);
 
 
@@ -213,20 +215,17 @@ var featureLayerInfos = [{
 		markers.clearLayers();
 		var index;
 		for(index = 0; index < inArray.length; ++index){
-
-			loadFeatureLayer(featureLayerInfos[inArray[index]], markers);
+			map.addLayer(featureLayerInfos[inArray[index]].testLayer);
+//			loadFeatureLayer(featureLayerInfos[inArray[index]], markers);
 		}
 	}
 
 	function loadFeatureLayer (featureLayerInfo, markerLayer){
-		if (typeof(featureLayerInfo.actionLayer)==="undefined"){
-			featureLayerInfo.actionLayer = new L.esri.ClusteredFeatureLayer(featureLayerInfo.url,{
+		new L.esri.ClusteredFeatureLayer(featureLayerInfo.url,{
 				cluster: markerLayer,
 				createMarker: featureLayerInfo.createMarker,
 				onEachMarker: featureLayerInfo.bindMarker,
-			});
-		}
-		markerLayer.addLayer(featureLayerInfo.actionLayer);
+		}).addTo(map);
 	}
 
 
@@ -234,8 +233,11 @@ var featureLayerInfos = [{
 	baseMap.addBaseMap();
 
 	function updateLayers(){
+		markers._unspiderfy();
+		markers.clearLayers();
 		for (var j in featureLayerInfos){
-			if (map.hasLayer(featureLayerInfos[j])){
+			if (map.hasLayer(featureLayerInfos[j].testLayer)){
+				console.log('update layer ' + featureLayerInfos[j].name);
 				loadFeatureLayer(featureLayerInfos[j], markers);
 			}
 		}
@@ -244,27 +246,20 @@ var featureLayerInfos = [{
 	//addFeatureLayers([3, 1, 2, 0]);
 
 	map.on('overlayadd', function(e){
-		console.log('Adding Layer');
 		for (var j in featureLayerInfos){
 			if (e.layer === featureLayerInfos[j].testLayer){
-				console.log('Found Layer to Add');
 				loadFeatureLayer(featureLayerInfos[j], markers);
 			}
 		}
 	});
 
 	map.on('overlayremove', function(e){
-		console.log(featureLayerInfos);
-		console.log('Removing Layer');
 		for (var j in featureLayerInfos){
 			if (e.layer === featureLayerInfos[j].testLayer){
-				console.log('Found Layer to Remove');
-				markers._unspiderfy();
-				markers.clearLayers();
-				updateLayers();
-//				markers.removeLayer(featureLayerInfos[j].actionLayer);
+				console.log('Removing Layer ' + featureLayerInfos[j].name);
 			}
 		}
+		updateLayers();
 	});
 
 
@@ -277,7 +272,11 @@ var featureLayerInfos = [{
 	layerControl.addTo(map);
 
 	return {
-		//addFeatureLayers: addFeatureLayers
+		map: map,
+		markers: markers,
+		featureLayerInfos: featureLayerInfos,
+		addFeatureLayers: addFeatureLayers,
+		updateLayers: updateLayers
 	};
 }();
 
