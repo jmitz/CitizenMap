@@ -28,6 +28,8 @@ var layers = [
 }];
 
 
+
+
 var citizenMap = function(){
 	var div = 'divMap';
 
@@ -37,39 +39,6 @@ var citizenMap = function(){
 		center: L.latLng([40, -89.5]),
 		zoom: 7
 	});
-
-	var baseMap = {
-		baseMapLayers: {
-			street: [new L.esri.BasemapLayer('Topographic')],
-			satellite: [
-			new L.esri.BasemapLayer('Imagery'),
-			new L.esri.BasemapLayer('ImageryLabels'),
-			new L.esri.BasemapLayer('ImageryTransportation')
-			]
-		},
-		current: 'street',
-		//	layer: L.esri.basemapLayer(baseMap.baseMapLayers.street[0]),
-		addBaseMap: function(){
-			baseMap.addBaseMapArray(baseMap.baseMapLayers[baseMap.current]);
-		},
-		addBaseMapArray: function(inArray){
-			var index;
-			for(index = 0; index < inArray.length; ++index){
-				map.addLayer(inArray[index]);
-			}
-		},
-		removeBaseMapArray: function(inArray){
-			var index;
-			for(index = 0; index < inArray.length; ++index){
-				map.removeLayer(inArray[index]);
-			}
-		},
-		switchMap: function(){
-			baseMap.removeBaseMapArray(baseMap.baseMapLayers[baseMap.current]);
-			baseMap.current = (baseMap.current === 'street')?'satellite':'street';
-			baseMap.addBaseMapArray(baseMap.baseMapLayers[baseMap.current]);
-		}
-	};
 
 	/* Basemap Layers */
 	var baseStreetMap = L.esri.basemapLayer("Topographic");
@@ -85,10 +54,13 @@ var citizenMap = function(){
 		"Imagery with Streets": baseSatteliteWithTransportMap
 	};
 
-var maskUrl = 'http://geoservices.epa.illinois.gov/ArcGIS/rest/services/SWAP/Location/MapServer';
-var featureLayerInfos = [{
-	testLayer: new L.geoJson(null),
-	name:'Medical Disposal Sites',
+	// Set up Base Mapp
+	map.addLayer(baseLayers["Street Map"]);
+
+	var maskUrl = 'http://geoservices.epa.illinois.gov/ArcGIS/rest/services/SWAP/Location/MapServer';
+	var featureLayerInfos = [{
+		testLayer: new L.geoJson(null),
+		name:'Medical Disposal Sites',
 		//url: 'http://services1.arcgis.com/qI0WaD4k85ljbKGT/arcgis/rest/services/Medicine_Disposal_Locations/FeatureServer/0',
 		url: 'http://epa084dgis01.iltest.illinois.gov:6080/arcgis/rest/services/Mitzelfelt/CitizenPrograms/FeatureServer/0',
 		bindMarker: function(geojson, marker){
@@ -227,10 +199,6 @@ var featureLayerInfos = [{
 				onEachMarker: featureLayerInfo.bindMarker,
 		}).addTo(map);
 	}
-
-
-	// Set up Base Mapp
-	baseMap.addBaseMap();
 
 	function updateLayers(){
 		markers._unspiderfy();
