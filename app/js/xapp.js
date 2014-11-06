@@ -3,6 +3,7 @@
 var layers = [
 {
 	name: 'Medical Waste',
+	legendIcon: 'img/medicalwaste.png',
 	fullName: 'Medical Waste Disposal Sites',
 	url: 'http://epa084dgis01.iltest.illinois.gov:6080/arcgis/rest/services/Mitzelfelt/CitizenPrograms/FeatureServer/0',
 	markerIcon: 'img/medicalwastepin.png',
@@ -11,6 +12,7 @@ var layers = [
 	abbr: 'MedWaste'
 },{
 	name: 'Registered eWaste',
+	legendIcon: 'img/ewaste.png',
 	fullName: 'Registered Electronic Waste Disosal Sites',
 	url: 'http://epa084dgis01.iltest.illinois.gov:6080/arcgis/rest/services/Mitzelfelt/CitizenPrograms/FeatureServer/3',
 	markerIcon: 'img/ewastepin.png',
@@ -19,6 +21,7 @@ var layers = [
 	abbr: 'EWaste'
 },{
 	name: 'Household Hazardous Waste',
+	legendIcon: 'img/household.png',
 	fullname: 'Household Hazardous Waste Collection Sites',
 	url: 'http://epa084dgis01.iltest.illinois.gov:6080/arcgis/rest/services/Mitzelfelt/CitizenPrograms/FeatureServer/1',
 	markerIcon: {
@@ -33,6 +36,7 @@ var layers = [
 	abbr: 'HouseHaz'
 },{
 	name: 'Vehicle Testing',
+	legendIcon: 'img/vehicle.png',
 	fullName: 'Vehicle Emission Inspection and Testing',
 	url: 'http://epa084dgis01.iltest.illinois.gov:6080/arcgis/rest/services/Mitzelfelt/CitizenPrograms/FeatureServer/2',
 	markerIcon: {
@@ -61,6 +65,7 @@ function parseQuery(inQuery){
 	var mapCenter =  L.latLng([40, -89.5]); // Approximate center of Illinois
 	var mapCircle = L.circle(mapCenter, 307384); // Circle approximating extent of Illinois
 	var mapBounds = mapCircle.getBounds(); // Approximate Bounds of Illinois
+	var featureList = []; // List of features to be displayed on map
 	if (typeof(inQuery.Lat)==='string' && typeof(inQuery.Lon)==='string'){
 		var lat = Math.abs(Number(inQuery.Lat));
 		var lon = Math.abs(Number(inQuery.Lon));
@@ -88,11 +93,19 @@ function parseQuery(inQuery){
 			validInput = false;
 		}
 	}
+
+	for (var layer in layers){
+		if(inQuery[layers[layer].abbr]==='true'){
+			featureList.push(layer);
+		}
+	}
+
 	return {
 		validInput: validInput,
 		mapCenter: mapCenter,
 		mapCircle: mapCircle,
-		mapBounds: mapBounds
+		mapBounds: mapBounds,
+		featureList: featureList
 	};
 }
 
@@ -109,16 +122,27 @@ var citizenMap = function(inLayers, inQuery){
 
 	if (urlAttributes.validInput){
 		map.fitBounds(urlAttributes.mapBounds);
-		map.addLayer(urlAttributes.mapCircle);
+//		map.addLayer(urlAttributes.mapCircle);
 		//map.addLayer(urlAttributes.mapCenter);
 	}
 
+	var locationIcon = L.icon({
+		iconUrl: 'img/location.png',
+		iconRetinaUrl: 'img/location.png',
+		iconSize: [30, 30],
+		iconAnchor: [0,0]
+	});
+
+	var locationMarker = L.marker(urlAttributes.mapCenter, {icon: locationIcon});
+
+	map.addLayer(locationMarker);
+
 	/* Basemap Layers */
-	var baseStreetMap = L.esri.basemapLayer("Topographic");
-	var baseSatteliteMap = L.esri.basemapLayer("Imagery");
+	var baseStreetMap = L.esri.Layers.basemapLayer("Topographic");
+	var baseSatteliteMap = L.esri.Layers.basemapLayer("Imagery");
 	var baseSatteliteWithTransportMap = new L.LayerGroup([
-		L.esri.basemapLayer("Imagery"),
-		L.esri.basemapLayer('ImageryTransportation')
+		L.esri.Layers.basemapLayer("Imagery"),
+		L.esri.Layers.basemapLayer('ImageryTransportation')
 		]);
 
 	var baseLayers = {
@@ -173,11 +197,13 @@ var citizenMap = function(inLayers, inQuery){
 			var featureLayerInfo = {
 				testLayer: new L.geoJson(null),
 				name: inLayerArray[record].name,
+				legendIcon: inLayerArray[record].legendIcon,
 				url: inLayerArray[record].url,
 				bindMarker: bindMarker(markerTemplate),
 				createMarker: createMarker(inLayerArray[record].markerIcon),
 				alt: inLayerArray[record].fullName,
 				title: inLayerArray[record].markerTitle,
+				abbr: inLayerArray[record].abbr,
 				riseOnHover: true
 			};
 			returnInfoArray.push(featureLayerInfo);
@@ -190,7 +216,7 @@ var citizenMap = function(inLayers, inQuery){
 
 	function buildGroupedOverlays(){
 		var outGroupedOverlay = {};
-		var layerNameTemplate = "<span title='<%=name%>'><%=name%></span>";
+		var layerNameTemplate = "<span id='<%= abbr %>icon'><img src='<%= legendIcon %>'></span><span title='<%= name %>'><%= name %></span>";
 		outGroupedOverlay.Working = {};
 		for (var j in featureLayerInfos){
 			var layerName = _.template(layerNameTemplate,featureLayerInfos[j]);
@@ -213,40 +239,48 @@ var citizenMap = function(inLayers, inQuery){
 	}).addTo(map);
 
 
-	function addFeatureLayers (inArray){
+	function loadFeatures(featureLayerInfo, markerLayer){
+		var queryTask = L.esri.Tasks.query(featureLayerInfo.url)
+		.within(urlAttributes.mapBounds);
+		console.log(urlAttributes.mapBounds);
+		queryTask.run(function(error, featureCollection, response){
+			var features = featureCollection.features;
+			var thisBindPopup = bindMarker(featureLayerInfo.popupTemplate);
+			for (var feature in features){
+				var coordinates = features[feature].geometry.coordinates;
+				var thisFeature = featureLayerInfo.createMarker(features[feature], L.latLng([coordinates[1], coordinates[0]]));
+				featureLayerInfo.bindMarker(features[feature],thisFeature);
+				markerLayer.addLayers([thisFeature]);
+			}
+		});
+	}
+
+	function updateLayers(){
+		markers._unspiderfy();
 		markers.clearLayers();
-		var index;
-		for(index = 0; index < inArray.length; ++index){
-			map.addLayer(featureLayerInfos[inArray[index]].testLayer);
-//			loadFeatureLayer(featureLayerInfos[inArray[index]], markers);
-}
-}
-
-function loadFeatureLayer (featureLayerInfo, markerLayer){
-	new L.esri.ClusteredFeatureLayer(featureLayerInfo.url,{
-		cluster: markerLayer,
-		createMarker: featureLayerInfo.createMarker,
-		onEachMarker: featureLayerInfo.bindMarker,
-	}).addTo(map);
-}
-
-function updateLayers(){
-	markers._unspiderfy();
-	markers.clearLayers();
-	for (var j in featureLayerInfos){
-		if (map.hasLayer(featureLayerInfos[j].testLayer)){
-			console.log('update layer ' + featureLayerInfos[j].name);
-			loadFeatureLayer(featureLayerInfos[j], markers);
+		for (var j in featureLayerInfos){
+			if (map.hasLayer(featureLayerInfos[j].testLayer)){
+				console.log('update layer ' + featureLayerInfos[j].name);
+	//			loadFeatureLayer(featureLayerInfos[j], markers);
+				loadFeatures(featureLayerInfos[j], markers);
+			}
 		}
 	}
-}
 
-	//addFeatureLayers([3, 1, 2, 0]);
+	function addFeatures(inArray){
+		for ( var layerId in inArray){
+			$('#'+featureLayerInfos[inArray[layerId]].abbr+'icon').html("<img src='"+featureLayerInfos[inArray[layerId]].legendIcon+"'>");
+			map.addLayer(featureLayerInfos[inArray[layerId]].testLayer);
+			loadFeatures(featureLayerInfos[inArray[layerId]], markers);
+		}
+	}
+	
+	addFeatures(urlAttributes.featureList);
 
 	map.on('overlayadd', function(e){
 		for (var j in featureLayerInfos){
 			if (e.layer === featureLayerInfos[j].testLayer){
-				loadFeatureLayer(featureLayerInfos[j], markers);
+				loadFeatures(featureLayerInfos[j], markers);
 			}
 		}
 	});
@@ -264,17 +298,39 @@ function updateLayers(){
 	var layerControl = L.control.groupedLayers(baseLayers,buildGroupedOverlays(),{
 		collapsed: false,
 		closeButton: true,
-		position: 'topleft'
+		position: 'topright',
+		placeholder: 'Address or Place Name'
 	});
+
+	
+	var searchControl = new L.esri.Controls.Geosearch({
+		useMapBounds: true,
+		position: 'topleft',
+		zoomToResult: false,
+		collapseAfterResult: true,
+		expanded: false
+	}).addTo(map);
+
+	var results = new L.LayerGroup().addTo(map);
 
 	layerControl.addTo(map);
 
+	searchControl.on('results', function(data){
+		console.log(data);
+		urlAttributes.mapCenter = data.latlng;
+		urlAttributes.mapCircle.setLatLng(data.latlng);
+		urlAttributes.mapBounds = urlAttributes.mapCircle.getBounds();
+		locationMarker.setLatLng(urlAttributes.mapCenter);
+		map.fitBounds(urlAttributes.mapBounds);
+    results.clearLayers();
+    updateLayers();
+  });
 	return {
 		map: map,
 		markers: markers,
 		featureLayerInfos: featureLayerInfos,
-		addFeatureLayers: addFeatureLayers,
-		updateLayers: updateLayers
+		updateLayers: updateLayers,
+		urlAttributes: urlAttributes
 	};
 }(layers, QueryString);
 
