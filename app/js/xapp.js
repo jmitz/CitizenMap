@@ -1,56 +1,10 @@
 // citizenMap.js
 
-var layers = [
-{
-	name: 'Medical Waste',
-	legendIcon: 'img/medicalwaste.png',
-	fullName: 'Medical Waste Disposal Sites',
-	url: 'http://epa084dgis01.iltest.illinois.gov:6080/arcgis/rest/services/Mitzelfelt/CitizenPrograms/FeatureServer/0',
-	markerIcon: 'img/medicalwastepin.png',
-	popupTemplate: "<h5>Medical Disposal<h5><h4><%= properties.Name %></h4><p><%= properties.Address %><br><%= properties.City %>, IL</p><p><%= properties.Telephone %></p>",
-	markerTitle: "Name",
-	abbr: 'MedWaste'
-},{
-	name: 'Registered eWaste',
-	legendIcon: 'img/ewaste.png',
-	fullName: 'Registered Electronic Waste Disosal Sites',
-	url: 'http://epa084dgis01.iltest.illinois.gov:6080/arcgis/rest/services/Mitzelfelt/CitizenPrograms/FeatureServer/3',
-	markerIcon: 'img/ewastepin.png',
-	popupTemplate: "<h5>eWaste<h5><h4><%= properties.Company_Na %></h4><p><%= properties.Address %><br><%= properties.City %>, IL</p><p><%= properties.Telephone %></p>",
-	markerTitle: "Name",
-	abbr: 'EWaste'
-},{
-	name: 'Household Hazardous Waste',
-	legendIcon: 'img/household.png',
-	fullname: 'Household Hazardous Waste Collection Sites',
-	url: 'http://epa084dgis01.iltest.illinois.gov:6080/arcgis/rest/services/Mitzelfelt/CitizenPrograms/FeatureServer/1',
-	markerIcon: {
-		variable: 'type',
-		icons:{
-			"0": 'img/householdhazardpin.png',
-			"1": 'img/householdhazardeventpin.png'
-		}
-	},
-	popupTemplate: "<h5>Household Hazardous Waste Disposal<h5><h4><%= properties.sponsor %></h4><p><%= properties.address %><br><%= properties.city %>, IL</p><p><% if (properties.type === 1){var inDate = new Date(properties.date); print(inDate.toDateString());} %></p>",
-	markerTitle: "Name",
-	abbr: 'HouseHaz'
-},{
-	name: 'Vehicle Testing',
-	legendIcon: 'img/vehicle.png',
-	fullName: 'Vehicle Emission Inspection and Testing',
-	url: 'http://epa084dgis01.iltest.illinois.gov:6080/arcgis/rest/services/Mitzelfelt/CitizenPrograms/FeatureServer/2',
-	markerIcon: {
-		variable: 'type',
-		icons:{
-			"1": 'img/bluevehiclepin.png',
-			"2": 'img/greenvehiclepin.png',
-			"3": 'img/yellowvehiclepin.png'
-		}
-	},
-	popupTemplate: "<h5>Vehicle Testing Station<h5><h4><%= properties.name %></h4><p><%= properties.address %><br><%= properties.city %>, IL</p><p><%= properties.telephone %></p><p><%= properties.operationHours %></p>",
-	markerTitle: "name",
-	abbr: 'VIM'
-}];
+var layers;
+
+$.getJSON('data/config.json', function (data){
+	layers = data;
+});
 
 function milesToMeters(inMiles){
 	return (inMiles * 1609.34);
@@ -242,7 +196,6 @@ var citizenMap = function(inLayers, inQuery){
 	function loadFeatures(featureLayerInfo, markerLayer){
 		var queryTask = L.esri.Tasks.query(featureLayerInfo.url)
 		.within(urlAttributes.mapBounds);
-		console.log(urlAttributes.mapBounds);
 		queryTask.run(function(error, featureCollection, response){
 			var features = featureCollection.features;
 			var thisBindPopup = bindMarker(featureLayerInfo.popupTemplate);
@@ -332,6 +285,8 @@ var citizenMap = function(inLayers, inQuery){
 		updateLayers: updateLayers,
 		urlAttributes: urlAttributes
 	};
-}(layers, QueryString);
+};
 
-
+$(document).one('ajaxStop', function(){
+	citizenMap(layers, QueryString);
+});
