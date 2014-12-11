@@ -112,7 +112,7 @@ var citizenMap = function(inLayers, inQuery){
 
 	var bindMarker = function(inTemplate){
 		return function(geojson, marker){
-			marker.bindPopup(inTemplate(geojson));
+			marker.bindPopup(inTemplate.render(geojson));
 		};
 	};
 
@@ -147,7 +147,7 @@ var citizenMap = function(inLayers, inQuery){
 	var buildFeatureLayerInfos = function(inLayerArray){
 		var returnInfoArray = [];
 		for (var record in inLayerArray){
-			var markerTemplate =  _.template(inLayerArray[record].popupTemplate);
+			var markerTemplate =  $.templates(inLayerArray[record].popupTemplate);
 			var featureLayerInfo = {
 				testLayer: new L.geoJson(null),
 				name: inLayerArray[record].name,
@@ -170,10 +170,10 @@ var citizenMap = function(inLayers, inQuery){
 
 	function buildGroupedOverlays(){
 		var outGroupedOverlay = {};
-		var layerNameTemplate = "<span id='<%= abbr %>icon'><img src='<%= legendIcon %>'></span><span title='<%= name %>'><%= name %></span>";
+		var layerNameTemplate = $.templates("<span id='{{: abbr }}icon'><img src='{{: legendIcon }}'></span><span title='{{: name }}'>{{: name }}</span>");
 		outGroupedOverlay.Working = {};
 		for (var j in featureLayerInfos){
-			var layerName = _.template(layerNameTemplate,featureLayerInfos[j]);
+			var layerName = layerNameTemplate.render(featureLayerInfos[j]);
 			outGroupedOverlay.Working[layerName] = featureLayerInfos[j].testLayer;
 		}
 		return outGroupedOverlay;
@@ -263,6 +263,10 @@ var citizenMap = function(inLayers, inQuery){
 		collapseAfterResult: true,
 		expanded: false
 	}).addTo(map);
+
+	searchControl.on('load', function(e){
+		console.log('search load');
+	});
 
 	var results = new L.LayerGroup().addTo(map);
 
