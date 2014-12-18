@@ -3,50 +3,41 @@
 <head>
 
     <link rel="stylesheet" href="assets/bootstrap-3.1.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/leaflet-0.7.3/leaflet.css">
+    <link rel="stylesheet" type="text/css" href="<%= css %>" media="all" />
     <meta name="description" content="Location Input" />
     <meta charset="utf-8">
     <title>Location Input</title>
 </head>
 <body>
-  <form onSubmit="JavaScript:locateMap()">
-    <div class="checkbox">
-      <label>
-        <input type="checkbox" name="dataType" value="VIM">
-        VIM Testing Stations
-    </label>
-</div>
-<div class="checkbox">
-  <label>
-    <input type="checkbox" name="dataType" value="MedWaste">
-    Medication Disposal Locations
-</label>
-</div>
-<div class="checkbox">
-  <label>
-    <input type="checkbox" name="dataType" value="EWaste">
-    E-Waste Collection Sites
-</label>
-</div>
-<div class="checkbox">
-  <label>
-    <input type="checkbox" name="dataType" value="HouseHaz">
-    Hazardous Waste Collection Sites
-</label>
-</div>
-<div class="form-group">
-  <div class="input-group">
-    <input id='inLocation' type='text' class="form-control typeahead" placeholder="Street Address or City or ZIP">
-    <span class="input-group-btn">
-      <button type="submit" class="btn btn-search">
-          Nothing
-      </button>
-  </span>
-</div>
-</div>
-</form>
-<script src="assets/js/jquery-1.11.0.min.js"></script>
-<script src="assets/js/jsviews.js"></script>
-<script src="assets/bootstrap-3.1.1/js/bootstrap.min.js"></script>
-<script src="http://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
+    <form id="service-locator">
+        <div class="checkbox">
+            <label><input type="checkbox" name="dataType" value="VIM"> VIM Testing Stations</label>
+        </div>
+        <div class="checkbox">
+            <label><input type="checkbox" name="dataType" value="MedWaste"> Medication Disposal Locations</label>
+        </div>
+        <div class="checkbox">
+            <label><input type="checkbox" name="dataType" value="EWaste"> E-Waste Collection Sites</label></div>
+        <div class="checkbox">
+            <label><input type="checkbox" name="dataType" value="HouseHaz"> Hazardous Waste Collection Sites</label>
+        </div>
+        <div class="form-group">
+            <label class="sr-only" for="distance">enter distance from address to search</label>
+            <input id="distance" type="text" name="distance" />
+        </div>
+        <div class="input-group">
+            <label class="sr-only" for="find-services">Click to find services</label>
+            <input name="inLocation" type="text" class="form-control typeahead" placeholder="Address or City or ZIP">
+            <span class="input-group-btn">
+                <button id="find-services" type="submit" class="btn btn-search">GO</button>
+            </span>
+        </div>
+    </form><script src="assets/js/jquery-1.11.0.min.js"></script>
+    <script src="assets/js/jsviews.js"></script>
+    <script src="assets/bootstrap-3.1.1/js/bootstrap.min.js"></script>
+    <script src="http://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
+    <script src="assets/leaflet-0.7.3/leaflet.js"></script>
+    <script type="text/javascript" src="<%= js %>"></script>
 </body>
 </html>

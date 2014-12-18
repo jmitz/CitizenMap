@@ -32,7 +32,7 @@
       },
       "titles": {
         "0": "Permanent Site",
-        "1": "Event",
+        "1": "Event"
       }
     },
     "popupTemplate": "<h5>Household Hazardous Waste Disposal {{: properties.title }}<h5><h4>{{: properties.sponsor }}</h4><p>{{: properties.address }}<br>{{: properties.city }}, IL</p>",
