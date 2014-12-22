@@ -14,6 +14,17 @@ function metersToMiles(inMeters){
 	return Math.round(inMeters * 0.000621373);
 }
 
+function getNavUrl(inLocation){
+	var navUrlPart = '';
+	if (navigator.platform.substring(0,2) === 'iP'){
+		navUrlPart = 'https://maps.apple.com/maps?saddr=Current+Location&daddr=';
+	}
+	else {
+		navUrlPart = 'https://maps.google.com/maps?saddr=Current+Location&daddr=';
+	}
+	return navUrl;
+}
+
 function parseQuery(inQuery){
 	var validInput = true;
 	var mapCenter =  L.latLng([40, -89.5]); // Approximate center of Illinois
@@ -116,7 +127,8 @@ var citizenMap = function(inLayers, inQuery){
 		};
 	};
 
-	var createMarker = function(inMarkerIcon){
+	var createMarker = function(inMarkerInfo){
+		var inMarkerIcon = inMarkerInfo.markerIcon;
 		if (typeof(inMarkerIcon)==='string'){
 			returnCreateMarker = function(geojson, latLng){
 				return L.marker(latLng, {icon: L.icon({
@@ -125,28 +137,55 @@ var citizenMap = function(inLayers, inQuery){
 					iconSize: [32, 37],
 					iconAnchor: [16, 37],
 					popupAnchor:[0, -27]
-				})});		
+				}),
+				title: geojson.properties[inMarkerInfo.markerTitle],
+				riseOnHover: true
+			});		
 			};
 		}
 		else {
 			returnCreateMarker = function(geojson, latLng){
 				iconUrls = inMarkerIcon.icons;
+				titles = inMarkerIcon.titles;
 				return L.marker(latLng, {icon: L.icon({
 					iconUrl: iconUrls[geojson.properties[inMarkerIcon.variable]],
 					iconRetinaUrl: iconUrls[geojson.properties[inMarkerIcon.variable]],
 					iconSize: [32, 37],
 					iconAnchor: [16, 37],
 					popupAnchor:[0, -27]
-				})});
+				}),
+				title: titles[geojson.properties[inMarkerIcon.variable]],
+				riseOnHover: true
+			});
 			};
 		}
 
 		return returnCreateMarker;
 	};
 
+	// jsRender Converters Function Creator
+	var buildConverterFunction = function(inData){
+		return function(val){
+			var codedData = inData;
+			return codedData[val];
+		};
+	};
+
+	// jsRender Converters Creator
+	var buildTemplateConverter = function(inName, inData){
+		var converterName = inName + 'Decode';
+		$.views.converters(converterName, buildConverterFunction(inData));
+		return converterName;
+	};
+
+
 	var buildFeatureLayerInfos = function(inLayerArray){
+		console.log(inLayerArray);
 		var returnInfoArray = [];
 		for (var record in inLayerArray){
+			if (typeof(markerIcon) !== 'string'){
+				buildTemplateConverter(inLayerArray[record].abbr, inLayerArray[record].markerIcon.titles);
+			}
 			var markerTemplate =  $.templates(inLayerArray[record].popupTemplate);
 			var featureLayerInfo = {
 				testLayer: new L.geoJson(null),
@@ -154,7 +193,7 @@ var citizenMap = function(inLayers, inQuery){
 				legendIcon: inLayerArray[record].legendIcon,
 				url: inLayerArray[record].url,
 				bindMarker: bindMarker(markerTemplate),
-				createMarker: createMarker(inLayerArray[record].markerIcon),
+				createMarker: createMarker(inLayerArray[record]),
 				alt: inLayerArray[record].fullName,
 				title: inLayerArray[record].markerTitle,
 				abbr: inLayerArray[record].abbr,
@@ -188,7 +227,7 @@ var citizenMap = function(inLayers, inQuery){
 
 	var markers = new L.MarkerClusterGroup({
 		spiderfyOnMaxZoom: true,
-		disableClusteringAtZoom: 13,
+		disableClusteringAtZoom: 11,
 		zoomToBoundsOnClick: true
 	}).addTo(map);
 
@@ -292,5 +331,5 @@ var citizenMap = function(inLayers, inQuery){
 };
 
 $(document).one('ajaxStop', function(){
-	citizenMap(layers, QueryString);
+	thisMap = citizenMap(layers, QueryString);
 });

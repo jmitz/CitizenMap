@@ -118,7 +118,7 @@ function buildMapUrl(){
   };
   var locationParms = {
     location: encodeURIComponent(selectedLocation.location),
-    magicKey: encodeURIComponent(selectedLocation.magicKey)
+    magicKey: selectedLocation.magicKey
   };
   var findUrl = findUrlTemplate.render(locationParms);
   jQuery.ajax(findUrl,{

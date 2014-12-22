@@ -16,7 +16,7 @@
     "url": "http://geoservices.epa.illinois.gov/arcgis/rest/services/Environmental/CitizenPrograms/FeatureServer/3",
     "markerIcon": "img/ewastepin.png",
     "popupTemplate": "<h5>eWaste<h5><h4>{{: properties.Company_Na }}</h4><p>{{: properties.Address }}<br>{{: properties.City }}, IL</p><p>{{: properties.Telephone }}</p>",
-    "markerTitle": "Name",
+    "markerTitle": "Company_Na",
     "abbr": "EWaste"
   },
   {
@@ -54,10 +54,10 @@
       "titles": {
         "1": "Full Service",
         "2": "OBD Only",
-        "3": "Air Team Appointment Only"
+        "3": "Air Team\nAppointment Only"
       }
     },
-    "popupTemplate": "<h5>{{: properties.title }} Vehicle Testing Station<h5><h4>{{: properties.name }}</h4><p>{{: properties.address }}<br>{{: properties.city }}, IL</p><p>{{: properties.telephone }}</p><p>{{: properties.operationHours }}</p>",
+    "popupTemplate": "<h5>{{VIMDecode: properties.type }}<br>Vehicle Testing Station<h5><h4>{{: properties.name }}</h4><p>{{: properties.address }}<br>{{: properties.city }}, IL</p><p>{{: properties.telephone }}</p><p>{{: properties.operationHours }}</p>",
     "markerTitle": "name",
     "abbr": "VIM"
   }
