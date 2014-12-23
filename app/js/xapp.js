@@ -82,14 +82,14 @@ var citizenMap = function(inLayers, inQuery){
 	if (urlAttributes.validInput){
 		map.fitBounds(urlAttributes.mapBounds);
 		map.addLayer(urlAttributes.mapCircle);
-		//map.addLayer(urlAttributes.mapCenter);
+//		map.addLayer(urlAttributes.mapCenter);
 	}
 
 	var locationIcon = L.icon({
 		iconUrl: 'img/location.png',
 		iconRetinaUrl: 'img/location.png',
 		iconSize: [30, 30],
-		iconAnchor: [0,0]
+		iconAnchor: [15,15]
 	});
 
 	var locationMarker = L.marker(urlAttributes.mapCenter, {icon: locationIcon});
@@ -207,7 +207,8 @@ var citizenMap = function(inLayers, inQuery){
 				alt: inLayerArray[record].fullName,
 				title: inLayerArray[record].markerTitle,
 				abbr: inLayerArray[record].abbr,
-				riseOnHover: true
+				riseOnHover: true,
+				features: []
 			};
 			returnInfoArray.push(featureLayerInfo);
 		}
@@ -252,6 +253,10 @@ var citizenMap = function(inLayers, inQuery){
 				var coordinates = features[feature].geometry.coordinates;
 				var thisFeature = featureLayerInfo.createMarker(features[feature], L.latLng([coordinates[1], coordinates[0]]));
 				featureLayerInfo.bindMarker(features[feature],thisFeature);
+				featureLayerInfo.features.push({
+					distance: 10,
+					name: "Test"
+				});
 				markerLayer.addLayers([thisFeature]);
 			}
 		});
