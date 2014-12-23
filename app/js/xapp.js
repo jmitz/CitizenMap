@@ -14,17 +14,6 @@ function metersToMiles(inMeters){
 	return Math.round(inMeters * 0.000621373);
 }
 
-function getNavUrl(inLocation){
-	var navUrlPart = '';
-	if (navigator.platform.substring(0,2) === 'iP'){
-		navUrlPart = 'https://maps.apple.com/maps?saddr=Current+Location&daddr=';
-	}
-	else {
-		navUrlPart = 'https://maps.google.com/maps?saddr=Current+Location&daddr=';
-	}
-	return navUrl;
-}
-
 function parseQuery(inQuery){
 	var validInput = true;
 	var mapCenter =  L.latLng([40, -89.5]); // Approximate center of Illinois
@@ -87,7 +76,7 @@ var citizenMap = function(inLayers, inQuery){
 
 	if (urlAttributes.validInput){
 		map.fitBounds(urlAttributes.mapBounds);
-//		map.addLayer(urlAttributes.mapCircle);
+		map.addLayer(urlAttributes.mapCircle);
 		//map.addLayer(urlAttributes.mapCenter);
 	}
 
@@ -123,6 +112,7 @@ var citizenMap = function(inLayers, inQuery){
 
 	var bindMarker = function(inTemplate){
 		return function(geojson, marker){
+			console.log(geojson);
 			marker.bindPopup(inTemplate.render(geojson));
 		};
 	};
@@ -177,10 +167,26 @@ var citizenMap = function(inLayers, inQuery){
 		$.views.converters(converterName, buildConverterFunction(inData));
 		return converterName;
 	};
+	//iPhone, iPad Navigation use apple.com All Others use google.com 
+	var navigationTemplateText = ((navigator.platform.substring(0,2) === 'iP')?'https://maps.apple.com/maps':'https://maps.google.com/maps')+'?saddr={{: fromLat }},{{: fromLng }}&daddr={{: toLat }},{{: toLng }}';
+
+	var navigationTemplate = $.templates(navigationTemplateText);
+
+	// jsRender Navigation Converter
+	$.views.converters('navigationConverter', function(val){
+		var fromLocation = locationMarker.getLatLng();
+		var navData = {
+			fromLat: fromLocation.lat,
+			fromLng: fromLocation.lng,
+			toLat: val[1],
+			toLng: val[0]
+		};
+		var navUrl = navigationTemplate.render(navData);
+		return navUrl;
+	});
 
 
 	var buildFeatureLayerInfos = function(inLayerArray){
-		console.log(inLayerArray);
 		var returnInfoArray = [];
 		for (var record in inLayerArray){
 			if (typeof(markerIcon) !== 'string'){
@@ -323,6 +329,7 @@ var citizenMap = function(inLayers, inQuery){
   });
 	return {
 		map: map,
+		locationMarker: locationMarker,
 		markers: markers,
 		featureLayerInfos: featureLayerInfos,
 		updateLayers: updateLayers,
