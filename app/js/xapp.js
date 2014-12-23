@@ -40,7 +40,11 @@ function parseQuery(inQuery){
 	if (validInput && typeof(inQuery.Miles)==='string'){
 		var meters = milesToMeters(inQuery.Miles);
 		if (!isNaN(meters)){
-			mapCircle = L.circle(mapCenter, meters);
+			mapCircle = L.circle(
+				mapCenter, 
+				meters,{
+					fill: false
+				});
 			mapBounds = mapCircle.getBounds();
 		}
 		else{
@@ -71,7 +75,8 @@ var citizenMap = function(inLayers, inQuery){
 		maxZoom: 17,
 		minZoom: 6,
 		center: L.latLng([40, -89.5]),
-		zoom: 7
+		zoom: 7,
+		zoomControl: true
 	});
 
 	if (urlAttributes.validInput){
@@ -112,7 +117,6 @@ var citizenMap = function(inLayers, inQuery){
 
 	var bindMarker = function(inTemplate){
 		return function(geojson, marker){
-			console.log(geojson);
 			marker.bindPopup(inTemplate.render(geojson));
 		};
 	};
@@ -130,7 +134,7 @@ var citizenMap = function(inLayers, inQuery){
 				}),
 				title: geojson.properties[inMarkerInfo.markerTitle],
 				riseOnHover: true
-			});		
+			});   
 			};
 		}
 		else {
@@ -259,7 +263,7 @@ var citizenMap = function(inLayers, inQuery){
 		for (var j in featureLayerInfos){
 			if (map.hasLayer(featureLayerInfos[j].testLayer)){
 				console.log('update layer ' + featureLayerInfos[j].name);
-	//			loadFeatureLayer(featureLayerInfos[j], markers);
+	//      loadFeatureLayer(featureLayerInfos[j], markers);
 				loadFeatures(featureLayerInfos[j], markers);
 			}
 		}
@@ -300,33 +304,10 @@ var citizenMap = function(inLayers, inQuery){
 		placeholder: 'Address or Place Name'
 	});
 
-	
-	var searchControl = new L.esri.Controls.Geosearch({
-		useMapBounds: true,
-		position: 'topleft',
-		zoomToResult: false,
-		collapseAfterResult: true,
-		expanded: false
-	}).addTo(map);
-
-	searchControl.on('load', function(e){
-		console.log('search load');
-	});
-
 	var results = new L.LayerGroup().addTo(map);
 
 	layerControl.addTo(map);
 
-	searchControl.on('results', function(data){
-		console.log(data);
-		urlAttributes.mapCenter = data.latlng;
-		urlAttributes.mapCircle.setLatLng(data.latlng);
-		urlAttributes.mapBounds = urlAttributes.mapCircle.getBounds();
-		locationMarker.setLatLng(urlAttributes.mapCenter);
-		map.fitBounds(urlAttributes.mapBounds);
-    results.clearLayers();
-    updateLayers();
-  });
 	return {
 		map: map,
 		locationMarker: locationMarker,
