@@ -14,6 +14,16 @@ function metersToMiles(inMeters){
 	return Math.round(inMeters * 0.000621373);
 }
 
+function distanceSort(a, b){
+	return ((a.distance < b.distance)?-1:(a.distance > b.distance)?1:0);
+}
+
+function emptyArray(array){
+	while (array.length>0){
+		array.pop();
+	}
+}
+
 function parseQuery(inQuery){
 	var validInput = true;
 	var mapCenter =  L.latLng([40, -89.5]); // Approximate center of Illinois
@@ -82,7 +92,6 @@ var citizenMap = function(inLayers, inQuery){
 	if (urlAttributes.validInput){
 		map.fitBounds(urlAttributes.mapBounds);
 		map.addLayer(urlAttributes.mapCircle);
-//		map.addLayer(urlAttributes.mapCenter);
 	}
 
 	var locationIcon = L.icon({
@@ -254,11 +263,13 @@ var citizenMap = function(inLayers, inQuery){
 				var thisFeature = featureLayerInfo.createMarker(features[feature], L.latLng([coordinates[1], coordinates[0]]));
 				featureLayerInfo.bindMarker(features[feature],thisFeature);
 				featureLayerInfo.features.push({
-					distance: 10,
-					name: "Test"
+					distance: metersToMiles(urlAttributes.mapCenter.distanceTo(thisFeature.getLatLng())),
+					info: features[feature].properties,
+					feature: thisFeature
 				});
 				markerLayer.addLayers([thisFeature]);
 			}
+			featureLayerInfo.features.sort(distanceSort);
 		});
 	}
 
@@ -266,6 +277,7 @@ var citizenMap = function(inLayers, inQuery){
 		markers._unspiderfy();
 		markers.clearLayers();
 		for (var j in featureLayerInfos){
+			emptyArray(featureLayerInfos[j].features);
 			if (map.hasLayer(featureLayerInfos[j].testLayer)){
 				console.log('update layer ' + featureLayerInfos[j].name);
 	//      loadFeatureLayer(featureLayerInfos[j], markers);
