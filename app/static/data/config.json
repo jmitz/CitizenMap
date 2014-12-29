@@ -6,6 +6,7 @@
     "url": "http://geoservices.epa.illinois.gov/arcgis/rest/services/Environmental/CitizenPrograms/FeatureServer/0",
     "markerIcon": "img/medicalwastepin.png",
     "popupTemplate": "<h5>Medical Disposal<h5><h4>{{: properties.Name }}</h4><p>{{: properties.Address }}<br>{{: properties.City }}, IL <a href='{{navigationConverter: geometry.coordinates }}'>Navigate</a></p><p>{{: properties.Telephone }} <a href='tel:{{: properties.Telephone }}'>Call</a></p>",
+    "listTemplate": "<tr><td><b>{{:Name}}</b><br>{{:Address}}<br>{{:City}}, IL {{:Zip_Code}}</td><td>{{:distance}}</td></tr>",
     "markerTitle": "Name",
     "abbr": "MedWaste"
   },
@@ -16,6 +17,7 @@
     "url": "http://geoservices.epa.illinois.gov/arcgis/rest/services/Environmental/CitizenPrograms/FeatureServer/3",
     "markerIcon": "img/ewastepin.png",
     "popupTemplate": "<h5>eWaste<h5><h4>{{: properties.Company_Na }}</h4><p>{{: properties.Address }}<br>{{: properties.City }}, IL <a href='{{navigationConverter: geometry.coordinates }}'>Navigate</a></p><p>{{: properties.Phone }} <a href='tel:{{: properties.Phone }}'>Call</a></p>",
+    "listTemplate": "<tr><td><b>{{:Complany_Na}}</b><br>{{:Address}}<br>{{:City}}, {{:State}}</td><td>{{:distance}}</td></tr>",
     "markerTitle": "Company_Na",
     "abbr": "EWaste"
   },
@@ -36,6 +38,7 @@
       }
     },
     "popupTemplate": "<h5>Household Hazardous Waste Disposal {{: properties.title }}<h5><h4>{{: properties.sponsor }}</h4><p>{{: properties.address }}<br>{{: properties.city }}, IL <a href='{{navigationConverter: geometry.coordinates }}'>Navigate</a></p>",
+    "listTemplate": "<tr><td><b>{{:sponsor}}</b><br>{{:address}}<br>{{:city}}, IL</td><td>{{:distance}}</td></tr>",
     "markerTitle": "Name",
     "abbr": "HouseHaz"
   },
@@ -58,6 +61,7 @@
       }
     },
     "popupTemplate": "<h5>{{VIMDecode: properties.type }}<br>Vehicle Testing Station<h5><h4>{{: properties.name }}</h4><p>{{: properties.address }}<br>{{: properties.city }}, IL <a href='{{navigationConverter: geometry.coordinates }}'>Navigate</a></p><p>{{: properties.telephone }} <a href='tel:{{: properties.telephone }}'>Call</a></p><p>{{: properties.operationHours }}</p>",
+    "listTemplate": "<tr><td><b>{{:name}}</b><br>{{:address}}<br>{{:city}}, IL {{:zip}}</td><td>{{VIMDecode: type}}</td><td>{{:distance}}</td></tr>",
     "markerTitle": "name",
     "abbr": "VIM"
   }

@@ -24,6 +24,11 @@ function emptyArray(array){
 	}
 }
 
+$.templates({
+	"navigationTemplate": (((navigator.platform.substring(0,2) === 'iP')?'https://maps.apple.com/maps':'https://maps.google.com/maps')+'?saddr={{: fromLat }},{{: fromLng }}&daddr={{: toLat }},{{: toLng }}')
+
+});
+
 function parseQuery(inQuery){
 	var validInput = true;
 	var mapCenter =  L.latLng([40, -89.5]); // Approximate center of Illinois
@@ -181,9 +186,9 @@ var citizenMap = function(inLayers, inQuery){
 		return converterName;
 	};
 	//iPhone, iPad Navigation use apple.com All Others use google.com 
-	var navigationTemplateText = ((navigator.platform.substring(0,2) === 'iP')?'https://maps.apple.com/maps':'https://maps.google.com/maps')+'?saddr={{: fromLat }},{{: fromLng }}&daddr={{: toLat }},{{: toLng }}';
+//	var navigationTemplateText = ((navigator.platform.substring(0,2) === 'iP')?'https://maps.apple.com/maps':'https://maps.google.com/maps')+'?saddr={{: fromLat }},{{: fromLng }}&daddr={{: toLat }},{{: toLng }}';
 
-	var navigationTemplate = $.templates(navigationTemplateText);
+//	var navigationTemplate = $.templates(navigationTemplateText);
 
 	// jsRender Navigation Converter
 	$.views.converters('navigationConverter', function(val){
@@ -194,7 +199,7 @@ var citizenMap = function(inLayers, inQuery){
 			toLat: val[1],
 			toLng: val[0]
 		};
-		var navUrl = navigationTemplate.render(navData);
+		var navUrl = $.render.navigationTemplate(navData);
 		return navUrl;
 	});
 
@@ -229,7 +234,7 @@ var citizenMap = function(inLayers, inQuery){
 
 	function buildGroupedOverlays(){
 		var outGroupedOverlay = {};
-		var layerNameTemplate = $.templates("<span id='{{: abbr }}icon'><img src='{{: legendIcon }}'></span><span title='{{: name }}'>{{: name }}</span>");
+		var layerNameTemplate = $.templates("<span id='{{: abbr }}icon'><img src='{{: legendIcon }}'></span><span title='{{: name }}'>{{: name }}</span><span id='{{:abbr}}List'></span>");
 		outGroupedOverlay.Working = {};
 		for (var j in featureLayerInfos){
 			var layerName = layerNameTemplate.render(featureLayerInfos[j]);
@@ -270,6 +275,7 @@ var citizenMap = function(inLayers, inQuery){
 				markerLayer.addLayers([thisFeature]);
 			}
 			featureLayerInfo.features.sort(distanceSort);
+			$(featureLayerInfo.abbr + 'List').html("Testing");
 		});
 	}
 
