@@ -25,7 +25,10 @@ function emptyArray(array){
 }
 
 $.templates({
-	"navigationTemplate": (((navigator.platform.substring(0,2) === 'iP')?'https://maps.apple.com/maps':'https://maps.google.com/maps')+'?saddr={{: fromLat }},{{: fromLng }}&daddr={{: toLat }},{{: toLng }}')
+	//iPhone, iPad Navigation use apple.com All Others use google.com 
+	"navigation": (((navigator.platform.substring(0,2) === 'iP')?'https://maps.apple.com/maps':'https://maps.google.com/maps')+'?saddr={{: fromLat }},{{: fromLng }}&daddr={{: toLat }},{{: toLng }}'),
+	"layerName": "<span id='{{: abbr }}icon'><img src='{{: legendIcon }}'></span><span title='{{: name }}'>{{: name }}</span><div id='{{:abbr}}List'></div>",
+	"layerIcon": "<img src='{{:legendIcon}}'>"
 
 });
 
@@ -127,8 +130,6 @@ var citizenMap = function(inLayers, inQuery){
 	// Set up Base Mapp
 	map.addLayer(baseLayers["Street Map"]);
 
-	var maskUrl = 'http://geoservices.epa.illinois.gov/ArcGIS/rest/services/SWAP/Location/MapServer';
-
 	var bindMarker = function(inTemplate){
 		return function(geojson, marker){
 			marker.bindPopup(inTemplate.render(geojson));
@@ -185,10 +186,6 @@ var citizenMap = function(inLayers, inQuery){
 		$.views.converters(converterName, buildConverterFunction(inData));
 		return converterName;
 	};
-	//iPhone, iPad Navigation use apple.com All Others use google.com 
-//	var navigationTemplateText = ((navigator.platform.substring(0,2) === 'iP')?'https://maps.apple.com/maps':'https://maps.google.com/maps')+'?saddr={{: fromLat }},{{: fromLng }}&daddr={{: toLat }},{{: toLng }}';
-
-//	var navigationTemplate = $.templates(navigationTemplateText);
 
 	// jsRender Navigation Converter
 	$.views.converters('navigationConverter', function(val){
@@ -199,7 +196,7 @@ var citizenMap = function(inLayers, inQuery){
 			toLat: val[1],
 			toLng: val[0]
 		};
-		var navUrl = $.render.navigationTemplate(navData);
+		var navUrl = $.render.navigation(navData);
 		return navUrl;
 	});
 
@@ -234,19 +231,13 @@ var citizenMap = function(inLayers, inQuery){
 
 	function buildGroupedOverlays(){
 		var outGroupedOverlay = {};
-		var layerNameTemplate = $.templates("<span id='{{: abbr }}icon'><img src='{{: legendIcon }}'></span><span title='{{: name }}'>{{: name }}</span><span id='{{:abbr}}List'></span>");
 		outGroupedOverlay.Working = {};
 		for (var j in featureLayerInfos){
-			var layerName = layerNameTemplate.render(featureLayerInfos[j]);
+			var layerName = $.render.layerName(featureLayerInfos[j]);
 			outGroupedOverlay.Working[layerName] = featureLayerInfos[j].testLayer;
 		}
 		return outGroupedOverlay;
 	}
-
-	var maskLayer = new L.esri.DynamicMapLayer(maskUrl,{
-		opacity: 0.75,
-		layers: [10]
-	});
 
 	// Set up Action Layers
 
@@ -275,7 +266,7 @@ var citizenMap = function(inLayers, inQuery){
 				markerLayer.addLayers([thisFeature]);
 			}
 			featureLayerInfo.features.sort(distanceSort);
-			$(featureLayerInfo.abbr + 'List').html("Testing");
+			$("#" +featureLayerInfo.abbr + 'List').html("Testing");
 		});
 	}
 
@@ -284,6 +275,7 @@ var citizenMap = function(inLayers, inQuery){
 		markers.clearLayers();
 		for (var j in featureLayerInfos){
 			emptyArray(featureLayerInfos[j].features);
+			$("#" +featureLayerInfos[j].abbr + 'List').html('');
 			if (map.hasLayer(featureLayerInfos[j].testLayer)){
 				console.log('update layer ' + featureLayerInfos[j].name);
 	//      loadFeatureLayer(featureLayerInfos[j], markers);
@@ -294,7 +286,7 @@ var citizenMap = function(inLayers, inQuery){
 
 	function addFeatures(inArray){
 		for ( var layerId in inArray){
-			$('#'+featureLayerInfos[inArray[layerId]].abbr+'icon').html("<img src='"+featureLayerInfos[inArray[layerId]].legendIcon+"'>");
+			$('#'+featureLayerInfos[inArray[layerId]].abbr+'icon').html($.render.layerIcon(featureLayerInfos[inArray[layerId]]));
 			map.addLayer(featureLayerInfos[inArray[layerId]].testLayer);
 			loadFeatures(featureLayerInfos[inArray[layerId]], markers);
 		}
