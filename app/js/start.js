@@ -69,6 +69,7 @@ function filterSuggestions(inArray) {
       returnArray.push({location: inArray[item].text, magicKey: inArray[item].magicKey});
     }
   }
+  selectedLocation = returnArray[0];
   return returnArray;
 }
 
@@ -94,8 +95,8 @@ function getSuggestions(inText, callBack){
 var typeahead = jQuery('.typeahead').typeahead({
   minLength: 3,
   highlight: true,
-  hint: true,
-  autoselect: true
+  hint: true
+//  autoselect: true
 },{
   name: 'location',
   displayKey: 'location',
