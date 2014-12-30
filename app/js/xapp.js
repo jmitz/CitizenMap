@@ -28,8 +28,15 @@ $.templates({
 	//iPhone, iPad Navigation use apple.com All Others use google.com 
 	"navigation": (((navigator.platform.substring(0,2) === 'iP')?'https://maps.apple.com/maps':'https://maps.google.com/maps')+'?saddr={{: fromLat }},{{: fromLng }}&daddr={{: toLat }},{{: toLng }}'),
 	"layerName": "<span id='{{: abbr }}icon'><img src='{{: legendIcon }}'></span><span title='{{: name }}'>{{: name }}</span><div id='{{:abbr}}List'></div>",
-	"layerIcon": "<img src='{{:legendIcon}}'>"
+	"layerIcon": "<img src='{{:legendIcon}}'>",
+	"layerListTable": "{{if ~layerCount(features) > 0}}<table class='table table-condensed'>{{for features tmpl=~layerListTmplName(abbr) /}}</table>{{/if}}",
+	"testTable": "<tr><td>This</td><td>is a</td><td>table row.</td></tr>"
 
+});
+
+$.views.helpers({
+	"layerCount": function(inFeatures){return inFeatures.length;},
+	"layerListTmplName": function(inAbbr){return inAbbr + "List";}
 });
 
 function parseQuery(inQuery){
@@ -222,6 +229,10 @@ var citizenMap = function(inLayers, inQuery){
 				features: []
 			};
 			returnInfoArray.push(featureLayerInfo);
+			var templateParms = {};
+			templateParms[featureLayerInfo.abbr + 'List'] = inLayerArray[record].listTemplate;
+			$.templates(templateParms);
+
 		}
 		return returnInfoArray;
 	};
@@ -266,7 +277,7 @@ var citizenMap = function(inLayers, inQuery){
 				markerLayer.addLayers([thisFeature]);
 			}
 			featureLayerInfo.features.sort(distanceSort);
-			$("#" +featureLayerInfo.abbr + 'List').html("Testing");
+			$("#" +featureLayerInfo.abbr + 'List').html($.render.layerListTable(featureLayerInfo));
 		});
 	}
 
