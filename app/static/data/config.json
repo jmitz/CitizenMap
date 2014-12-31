@@ -57,7 +57,7 @@
       "titles": {
         "1": "Full Service",
         "2": "OBD Only",
-        "3": "Air Team\nAppointment Only"
+        "3": "Appointment Only"
       }
     },
     "popupTemplate": "<h5>{{VIMDecode: properties.type }}<br>Vehicle Testing Station<h5><h4>{{: properties.name }}</h4><p>{{: properties.address }}<br>{{: properties.city }}, IL <a href='{{navigationConverter: geometry.coordinates }}'>Navigate</a></p><p>{{: properties.telephone }} <a href='tel:{{: properties.telephone }}'>Call</a></p><p>{{: properties.operationHours }}</p>",
