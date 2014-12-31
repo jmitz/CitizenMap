@@ -107,7 +107,7 @@ bind('typeahead:selected', function(obj, datum, name){
 });
 
 
-function buildMapUrl(){
+function buildMapUrl(newMap){
   var dataTypes = [];
   jQuery('input[name=dataType]:checked').each(function(index){
     dataTypes.push(this.value);
@@ -127,7 +127,12 @@ function buildMapUrl(){
     success: function(inJson){
       templateParms.lat = inJson.locations[0].feature.geometry.y;
       templateParms.lng = inJson.locations[0].feature.geometry.x;
-      window.location = mapUrlTemplate.render(templateParms);
+      if (newMap){
+        window.location = mapUrlTemplate.render(templateParms);
+      }
+      else{
+        thisMap.setLocation(templateParms);
+      }
     }
   });
 }
@@ -135,6 +140,17 @@ function buildMapUrl(){
 jQuery(document).ready(function(){
   if(jQuery('form#service-locator').length) {
     jQuery('form#service-locator').submit(function(e){
+      buildMapUrl(true);
+      e.preventDefault();
+      e.stopPropagation();
+      return false;
+    });
+  }
+});
+
+jQuery(document).ready(function(){
+  if(jQuery('form#refine-services').length) {
+    jQuery('form#refine-services').submit(function(e){
       buildMapUrl();
       e.preventDefault();
       e.stopPropagation();

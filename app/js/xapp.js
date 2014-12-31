@@ -39,6 +39,8 @@ $.views.helpers({
 	"layerListTmplName": function(inAbbr){return inAbbr + "List";}
 });
 
+
+// Thinking about rewriting this to return just the scrubbed values and making another function to build the map objects
 function parseQuery(inQuery){
 	var validInput = true;
 	var mapCenter =  L.latLng([40, -89.5]); // Approximate center of Illinois
@@ -93,7 +95,8 @@ function parseQuery(inQuery){
 }
 
 var citizenMap = function(inLayers, inQuery){
-	var urlAttributes = parseQuery(inQuery);
+	var mapAttributes = parseQuery(inQuery);
+	console.log(inQuery);
 	var div = 'divMap';
 
 	var map = L.map('divMap',{
@@ -101,12 +104,15 @@ var citizenMap = function(inLayers, inQuery){
 		minZoom: 6,
 		center: L.latLng([40, -89.5]),
 		zoom: 7,
-		zoomControl: true
+		zoomControl: false
 	});
 
-	if (urlAttributes.validInput){
-		map.fitBounds(urlAttributes.mapBounds);
-		map.addLayer(urlAttributes.mapCircle);
+	var zoomslider = L.control.zoomslider();
+	zoomslider.addTo(map);
+
+	if (mapAttributes.validInput){
+		map.fitBounds(mapAttributes.mapBounds);
+		map.addLayer(mapAttributes.mapCircle);
 	}
 
 	var locationIcon = L.icon({
@@ -116,7 +122,7 @@ var citizenMap = function(inLayers, inQuery){
 		iconAnchor: [15,15]
 	});
 
-	var locationMarker = L.marker(urlAttributes.mapCenter, {icon: locationIcon});
+	var locationMarker = L.marker(mapAttributes.mapCenter, {icon: locationIcon});
 
 	map.addLayer(locationMarker);
 
@@ -260,7 +266,7 @@ var citizenMap = function(inLayers, inQuery){
 
 	function loadFeatures(featureLayerInfo, markerLayer){
 		var queryTask = L.esri.Tasks.query(featureLayerInfo.url)
-		.within(urlAttributes.mapBounds);
+		.within(mapAttributes.mapBounds);
 		queryTask.run(function(error, featureCollection, response){
 			var features = featureCollection.features;
 			var thisBindPopup = bindMarker(featureLayerInfo.popupTemplate);
@@ -269,7 +275,7 @@ var citizenMap = function(inLayers, inQuery){
 				var thisFeature = featureLayerInfo.createMarker(features[feature], L.latLng([coordinates[1], coordinates[0]]));
 				featureLayerInfo.bindMarker(features[feature],thisFeature);
 				featureLayerInfo.features.push({
-					distance: metersToMiles(urlAttributes.mapCenter.distanceTo(thisFeature.getLatLng())),
+					distance: metersToMiles(mapAttributes.mapCenter.distanceTo(thisFeature.getLatLng())),
 					info: features[feature].properties,
 					feature: thisFeature
 				});
@@ -302,7 +308,7 @@ var citizenMap = function(inLayers, inQuery){
 		}
 	}
 	
-	addFeatures(urlAttributes.featureList);
+	addFeatures(mapAttributes.featureList);
 
 	map.on('overlayadd', function(e){
 		for (var j in featureLayerInfos){
@@ -328,13 +334,28 @@ var citizenMap = function(inLayers, inQuery){
 
 	layerControl.addTo(map);
 
+
+// building this to allow for the location of the map to be reset from the new header form
+	function setLocation(inMapTemplateParms){
+		var mapInfo = parseQuery(inMapTemplateParms);
+		console.log(mapInfo);
+		if (mapInfo.validInput){
+// Move to relocateMap			map.fitBounds(mapAttributes.mapBounds);
+			mapAttributes.mapCenter = mapInfo.mapCenter;
+			mapAttributes.mapCircle.setLatLng(mapInfo.mapCenter);
+			mapAttributes.mapCircle.setRadius(mapAttributes.);
+		}
+
+	}
+
 	return {
 		map: map,
 		locationMarker: locationMarker,
 		markers: markers,
 		featureLayerInfos: featureLayerInfos,
 		updateLayers: updateLayers,
-		urlAttributes: urlAttributes
+		mapAttributes: mapAttributes,
+		setLocation: setLocation
 	};
 };
 
