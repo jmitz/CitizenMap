@@ -60,7 +60,7 @@
         "3": "Appointment Only"
       }
     },
-    "popupTemplate": "<h5>{{VIMDecode: properties.type }}<br>Vehicle Testing Station<h5><h4>{{: properties.name }}</h4><p>{{: properties.address }}<br>{{: properties.city }}, IL <a href='{{navigationConverter: geometry.coordinates }}'>Navigate</a></p><p>{{: properties.telephone }} <a href='tel:{{: properties.telephone }}'>Call</a></p><p>{{: properties.operationHours }}</p>",
+    "popupTemplate": "<h5>{{VIMDecode: properties.type }}<br>Vehicle Testing Station<h5><h4>{{: properties.name }}</h4><p>{{: properties.address }}<br>{{: properties.city }}, IL <a href='{{navigationConverter: geometry.coordinates }}'>Navigate</a></p><p>{{: properties.telephone }} <a href='tel:{{: properties.telephone }}'>Call</a></p>",
     "listTemplate": "<tr><td>{{:distance}} mi</td><td><small>{{VIMDecode: info.type}}</small><br>{{:info.name}}</td></tr>",
     "markerTitle": "name",
     "abbr": "VIM"

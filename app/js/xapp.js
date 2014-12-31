@@ -240,14 +240,13 @@ var citizenMap = function(inLayers, inQuery){
 
 	featureLayerInfos = buildFeatureLayerInfos(inLayers);
 
-	function buildGroupedOverlays(){
-		var outGroupedOverlay = {};
-		outGroupedOverlay.Working = {};
+	function buildLayerTitles(){
+		var outLayerTitles = {};
 		for (var j in featureLayerInfos){
 			var layerName = $.render.layerName(featureLayerInfos[j]);
-			outGroupedOverlay.Working[layerName] = featureLayerInfos[j].testLayer;
+			outLayerTitles[layerName] = featureLayerInfos[j].testLayer;
 		}
-		return outGroupedOverlay;
+		return outLayerTitles;
 	}
 
 	// Set up Action Layers
@@ -322,15 +321,10 @@ var citizenMap = function(inLayers, inQuery){
 		updateLayers();
 	});
 
-
-	var layerControl = L.control.groupedLayers(baseLayers,buildGroupedOverlays(),{
+	var layerControl = L.control.layers(baseLayers, buildLayerTitles(),{
 		collapsed: false,
-		closeButton: true,
-		position: 'topright',
-		placeholder: 'Address or Place Name'
+		position: 'topright'
 	});
-
-	var results = new L.LayerGroup().addTo(map);
 
 	layerControl.addTo(map);
 
