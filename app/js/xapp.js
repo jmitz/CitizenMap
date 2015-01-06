@@ -39,64 +39,72 @@ $.views.helpers({
 	"layerListTmplName": function(inAbbr){return inAbbr + "List";}
 });
 
+function validateInput(inValues){
+	var mapInfo = {};
 
-// Thinking about rewriting this to return just the scrubbed values and making another function to build the map objects
-function parseQuery(inQuery){
-	var validInput = true;
-	var mapCenter =  L.latLng([40, -89.5]); // Approximate center of Illinois
-	var mapCircle = L.circle(mapCenter, 307384); // Circle approximating extent of Illinois
-	var mapBounds = mapCircle.getBounds(); // Approximate Bounds of Illinois
-	var featureList = []; // List of features to be displayed on map
-	if (typeof(inQuery.Lat)==='string' && typeof(inQuery.Lon)==='string'){
-		var lat = Math.abs(Number(inQuery.Lat));
-		var lon = Math.abs(Number(inQuery.Lon));
+	// force lat lng measurements to absolute values
+	var tempLat = Math.abs(Number(inValues.lat));
+	var tempLng = Math.abs(Number(inValues.lng));
+
 		// check to see that the absolute value of longitude (87.4 - 91.6) is greater than the absolute value of latitude (36.9 - 42.5)
-		if (lat > lon){
-			var tmp = lat;
-			lat = lon;
-			lon = tmp;
-		}
-		// set map center to latitude and negative longitude for Illinois
-		if (lat > 36.9 && lat < 42.5 && lon > 87.4 && lon < 91.6){
-			mapCenter = L.latLng(lat, -lon);
-		}
-		else {
-			validInput = false;
-		}
-	}
-	if (validInput && typeof(inQuery.Miles)==='string'){
-		var meters = milesToMeters(inQuery.Miles);
-		if (!isNaN(meters)){
-			mapCircle = L.circle(
-				mapCenter, 
-				meters,{
-					fill: false
-				});
-			mapBounds = mapCircle.getBounds();
-		}
-		else{
-			validInput = false;
-		}
+	if (tempLat > tempLng){
+		var tmp = tempLat;
+		tempLat = tempLng;
+		tempLng = tmp;
 	}
 
+	// set map center to latitude and negative longitude for Illinois
+	if (tempLat > 36.9 && tempLat < 42.5 && tempLng > 87.4 && tempLng < 91.6){
+		mapInfo.mapCenter = L.latLng(tempLat, -tempLng);
+		mapInfo.validMapCenter = true;
+	}
+	else {
+		mapInfo.validMapcenter = false;
+		mapInfo.mapCenter = L.latLng([40, -89.5]);
+	}
+
+	// Check Miles input and set map radius distance
+	if (inValues.miles > 0 && inValues.miles <= 200){
+		mapInfo.distance = milesToMeters(inValues.miles);
+		mapInfo.validDistance = true;
+	}
+	else{
+		mapInfo.distance = 307384;
+		mapInfo.validDistance = false;
+	}
+
+	mapInfo.mapCircle = L.circle(
+		mapInfo.mapCenter, 
+		mapInfo.distance,{
+			fill: false
+	});
+	mapInfo.mapBounds = mapInfo.mapCircle.getBounds();
+	mapInfo.featureList = inValues.featureList;
+	return mapInfo;
+}
+
+function parseQuery(inQuery){
+	var returnValue = {
+		featureList: []
+	};
+	if (typeof(inQuery.lat)!=='undefined' && typeof(inQuery.lng)!=='undefined'){
+		returnValue.lat = Number(inQuery.lat);
+		returnValue.lng = Number(inQuery.lng);
+	}
+	if (typeof(inQuery.miles)!=='undefined'){
+		returnValue.miles = Number(inQuery.miles);
+	}
 	for (var layer in layers){
 		if(inQuery[layers[layer].abbr]==='true'){
-			featureList.push(layer);
+			returnValue.featureList.push(layer);
 		}
 	}
 
-	return {
-		validInput: validInput,
-		mapCenter: mapCenter,
-		mapCircle: mapCircle,
-		mapBounds: mapBounds,
-		featureList: featureList
-	};
+	return returnValue;
 }
 
 var citizenMap = function(inLayers, inQuery){
-	var mapAttributes = parseQuery(inQuery);
-	console.log(inQuery);
+	var mapAttributes = validateInput(parseQuery(inQuery));
 	var div = 'divMap';
 
 	var map = L.map('divMap',{
@@ -110,21 +118,12 @@ var citizenMap = function(inLayers, inQuery){
 	var zoomslider = L.control.zoomslider();
 	zoomslider.addTo(map);
 
-	if (mapAttributes.validInput){
-		map.fitBounds(mapAttributes.mapBounds);
-		map.addLayer(mapAttributes.mapCircle);
-	}
-
 	var locationIcon = L.icon({
 		iconUrl: 'img/location.png',
 		iconRetinaUrl: 'img/location.png',
 		iconSize: [30, 30],
 		iconAnchor: [15,15]
 	});
-
-	var locationMarker = L.marker(mapAttributes.mapCenter, {icon: locationIcon});
-
-	map.addLayer(locationMarker);
 
 	/* Basemap Layers */
 	var baseStreetMap = L.esri.Layers.basemapLayer("Topographic");
@@ -202,7 +201,7 @@ var citizenMap = function(inLayers, inQuery){
 
 	// jsRender Navigation Converter
 	$.views.converters('navigationConverter', function(val){
-		var fromLocation = locationMarker.getLatLng();
+		var fromLocation = mapAttributes.locationMarker.getLatLng();
 		var navData = {
 			fromLat: fromLocation.lat,
 			fromLng: fromLocation.lng,
@@ -212,7 +211,6 @@ var citizenMap = function(inLayers, inQuery){
 		var navUrl = $.render.navigation(navData);
 		return navUrl;
 	});
-
 
 	var buildFeatureLayerInfos = function(inLayerArray){
 		var returnInfoArray = [];
@@ -243,7 +241,6 @@ var citizenMap = function(inLayers, inQuery){
 		return returnInfoArray;
 	};
 
-
 	featureLayerInfos = buildFeatureLayerInfos(inLayers);
 
 	function buildLayerTitles(){
@@ -255,8 +252,33 @@ var citizenMap = function(inLayers, inQuery){
 		return outLayerTitles;
 	}
 
-	// Set up Action Layers
+	function locateMap(){
+		map.fitBounds(mapAttributes.mapBounds);
+		mapAttributes.locationMarker = L.marker(mapAttributes.mapCenter, {icon: locationIcon});
+		map.addLayer(mapAttributes.locationMarker);
+		map.addLayer(mapAttributes.mapCircle);
+	}
+	function reLocateMap(inMapAttributes){
+		if (inMapAttributes.validMapCenter && mapAttributes.mapCenter.distanceTo(inMapAttributes.mapCenter)>100){
+			mapAttributes.mapCenter = inMapAttributes.mapCenter;
+			mapAttributes.mapCircle.setLatLng(mapAttributes.mapCenter);
+		}
 
+		if (inMapAttributes.distance !== mapAttributes.distance){
+			mapAttributes.distance = inMapAttributes.distance;
+			mapAttributes.mapCircle.setRadius(mapAttributes.distance);
+		}
+
+		mapAttributes.locationMarker.setLatLng(mapAttributes.mapCenter);
+		mapAttributes.mapBounds = mapAttributes.mapCircle.getBounds();
+		map.fitBounds(mapAttributes.mapBounds);
+		
+		updateLayers();
+	}
+
+	locateMap();
+	
+	// Set up Action Layers
 	var markers = new L.MarkerClusterGroup({
 		spiderfyOnMaxZoom: true,
 		disableClusteringAtZoom: 11,
@@ -337,20 +359,12 @@ var citizenMap = function(inLayers, inQuery){
 
 // building this to allow for the location of the map to be reset from the new header form
 	function setLocation(inMapTemplateParms){
-		var mapInfo = parseQuery(inMapTemplateParms);
-		console.log(mapInfo);
-		if (mapInfo.validInput){
-// Move to relocateMap			map.fitBounds(mapAttributes.mapBounds);
-			mapAttributes.mapCenter = mapInfo.mapCenter;
-			mapAttributes.mapCircle.setLatLng(mapInfo.mapCenter);
-			mapAttributes.mapCircle.setRadius(mapAttributes.);
-		}
-
+		var mapInfo = validateInput(inMapTemplateParms);
+		reLocateMap(mapInfo);
 	}
 
 	return {
 		map: map,
-		locationMarker: locationMarker,
 		markers: markers,
 		featureLayerInfos: featureLayerInfos,
 		updateLayers: updateLayers,

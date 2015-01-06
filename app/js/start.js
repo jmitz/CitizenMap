@@ -57,10 +57,10 @@ L.Icon.Default.imagePath = '/img/leaflet/';
 
 var suggestionUrlTemplate = $.templates("http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/suggest?text={{:inText}}&location={{:encLngLat}}&distance={{:distance}}&f=json");
 var findUrlTemplate = $.templates("http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find?text={{:location}}&magicKey={{:magicKey}}&f=json");
-var mapUrlTemplate = $.templates("index.html?Lat={{:lat}}&Lon={{:lng}}&Miles={{:distance}}&{{:dataTypeString}}");
+var mapUrlTemplate = $.templates("index.html?lat={{:lat}}&lng={{:lng}}&miles={{:miles}}&name={{:name}}&{{:dataTypeString}}");
 var reIllinois = /, Illinois, (USA|United States)/;
 
-var selectedLocation;
+var selectedLocation = {};
 
 function filterSuggestions(inArray) {
   var returnArray = [];
@@ -106,15 +106,24 @@ bind('typeahead:selected', function(obj, datum, name){
   selectedLocation = datum;
 });
 
+if (QueryString.name){
+  jQuery('input[name=inLocation]').val(decodeURIComponent(QueryString.name));
+  selectedLocation.location = decodeURIComponent(QueryString.name);
+}
+
+if (QueryString.miles){
+  jQuery('select[name=distance]').val(QueryString.miles);
+}
 
 function buildMapUrl(newMap){
   var dataTypes = [];
   jQuery('input[name=dataType]:checked').each(function(index){
     dataTypes.push(this.value);
   });
-  var inLocation = jQuery('input[name=inLocation').val();
+  var inLocation = jQuery('input[name=inLocation]').val();
+  var inDistance = jQuery(newMap?'input[name=distance]':'select[name=distance] option:selected').val();
   var templateParms = {
-    distance: 10,
+    miles: inDistance,
     dataTypeString: dataTypes.join('=true&')+'=true'
   };
   var locationParms = {
@@ -127,10 +136,12 @@ function buildMapUrl(newMap){
     success: function(inJson){
       templateParms.lat = inJson.locations[0].feature.geometry.y;
       templateParms.lng = inJson.locations[0].feature.geometry.x;
+      templateParms.name = encodeURIComponent(inJson.locations[0].name);
       if (newMap){
         window.location = mapUrlTemplate.render(templateParms);
       }
       else{
+        jQuery('input[name=inLocation]').val(selectedLocation.location);
         thisMap.setLocation(templateParms);
       }
     }
