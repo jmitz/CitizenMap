@@ -87,12 +87,12 @@ function parseQuery(inQuery){
 	var returnValue = {
 		featureList: []
 	};
-	if (typeof(inQuery.lat)!=='undefined' && typeof(inQuery.lng)!=='undefined'){
-		returnValue.lat = Number(inQuery.lat);
-		returnValue.lng = Number(inQuery.lng);
+	if (typeof(inQuery.Lat)!=='undefined' && typeof(inQuery.Lon)!=='undefined'){
+		returnValue.lat = Number(inQuery.Lat);
+		returnValue.lng = Number(inQuery.Lon);
 	}
-	if (typeof(inQuery.miles)!=='undefined'){
-		returnValue.miles = Number(inQuery.miles);
+	if (typeof(inQuery.Miles)!=='undefined'){
+		returnValue.miles = Number(inQuery.Miles);
 	}
 	for (var layer in layers){
 		if(inQuery[layers[layer].abbr]==='true'){

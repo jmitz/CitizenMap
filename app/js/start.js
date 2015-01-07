@@ -57,7 +57,7 @@ L.Icon.Default.imagePath = '/img/leaflet/';
 
 var suggestionUrlTemplate = $.templates("http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/suggest?text={{:inText}}&location={{:encLngLat}}&distance={{:distance}}&f=json");
 var findUrlTemplate = $.templates("http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find?text={{:location}}&magicKey={{:magicKey}}&f=json");
-var mapUrlTemplate = $.templates("index.html?lat={{:lat}}&lng={{:lng}}&miles={{:miles}}&name={{:name}}&{{:dataTypeString}}");
+var mapUrlTemplate = $.templates("index.html?Lat={{:lat}}&Lon={{:lng}}&Miles={{:miles}}&Name={{:name}}&{{:dataTypeString}}");
 var reIllinois = /, Illinois, (USA|United States)/;
 
 var selectedLocation = {};
@@ -106,13 +106,13 @@ bind('typeahead:selected', function(obj, datum, name){
   selectedLocation = datum;
 });
 
-if (QueryString.name){
-  jQuery('input[name=inLocation]').val(decodeURIComponent(QueryString.name));
-  selectedLocation.location = decodeURIComponent(QueryString.name);
+if (QueryString.Name){
+  jQuery('input[name=inLocation]').val(decodeURIComponent(QueryString.Name));
+  selectedLocation.location = decodeURIComponent(QueryString.Name);
 }
 
-if (QueryString.miles){
-  jQuery('select[name=distance]').val(QueryString.miles);
+if (QueryString.Miles){
+  jQuery('select[name=distance]').val(QueryString.Miles);
 }
 
 function buildMapUrl(newMap){
