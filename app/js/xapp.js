@@ -27,10 +27,11 @@ function emptyArray(array){
 $.templates({
 	//iPhone, iPad Navigation use apple.com All Others use google.com 
 	"navigation": (((navigator.platform.substring(0,2) === 'iP')?'https://maps.apple.com/maps':'https://maps.google.com/maps')+'?saddr={{: fromLat }},{{: fromLng }}&daddr={{: toLat }},{{: toLng }}'),
-	"layerName": "<span id='{{: abbr }}icon'><img src='{{: legendIcon }}'></span><span title='{{: name }}'>{{: name }}</span><div class='layerList' id='{{:abbr}}List'></div>",
+	"layerName": "<span id='{{: abbr }}icon'><img src='{{: legendIcon }}'></span><span title='{{: name }}'>{{: name }}</span>",
 	"layerIcon": "<img src='{{:legendIcon}}'>",
 	"layerListTable": "{{if ~layerCount(features) > 0}}<table class='table table-condensed'>{{for features tmpl=~layerListTmplName(abbr) /}}</table>{{/if}}",
-	"testTable": "<tr><td>This</td><td>is a</td><td>table row.</td></tr>"
+	"testTable": "<tr><td>This</td><td>is a</td><td>table row.</td></tr>",
+	"layerInfo": "<div class='panel-heading' role='tab' id='{{:abbr}}Header'><p class='panel-title'><input type='checkbox' class='leaflet-control-layers-selector'><img src='{{: legendIcon }}'> {{: name }} <a data-toggle='collapse' data-parent='#divMapInfo' href='#collapse{{:abbr}}' aria-expanded='false' aria-controls='collapse{{:abbr}}'>Expand</a></p></div><div id='collapse{{:abbr}}' class='panel-collapse collapse' role='tabpanel' aria-labelledby='{{:abbr}}Header'><div class='panel-body layerList' id='{{:abbr}}List' ></div></div>"
 
 });
 

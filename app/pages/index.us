@@ -21,9 +21,8 @@
     <![endif]-->
   </head>
   <body>
-  <div  id="headline">
     <div class="container-fluid">
-      <div class="row">
+      <div id='header' class="row">
         <div class="col-xs-12">
           <h1>Find Services</h1>
           <form class="form-inline" style="width:463px;" id="refine-services" >
@@ -44,8 +43,52 @@
           </div>
         </div>
       </div>
+      <div id='divMapHolder' class="row">
+        <div class="col-lg-9">
+      	  <div id="divMap" class='mapHolder'></div>
+        </div>
+        <div class='col-lg-3'>
+          <div id='divMapInfo' class="panel-group mapHolder" role='tablist' aria-multiselectable='false'>
+            <div class='panel-heading' role='tab' id='MedWasteHeader'>
+              <p class='panel-title'>
+                <input type='checkbox' class='leaflet-control-layers-selector'>
+                <img src='img/medicalwaste.png'> Medical Waste <a data-toggle='collapse' data-parent='#divMapInfo' href='#collapseMedWaste' aria-expanded='false' aria-controls='collapseMedWaste'>Expand</a>
+              </p>
+            </div>
+            <div id='collapseMedWaste' class='panel-collapse collapse' role='tabpanel' aria-labelledby='MedWasteHeader'>
+              <div class='panel-body layerList' id='MedWasteList' ></div>
+            </div>
+            <div class='panel-heading' role='tab' id='EWasteHeader'>
+              <p class='panel-title'>
+                <input type='checkbox' class='leaflet-control-layers-selector'>
+                <img src='img/ewaste.png'> Registered eWaste <a data-toggle='collapse' data-parent='#divMapInfo' href='#collapseEWaste' aria-expanded='false' aria-controls='collapseEWaste'>Expand</a>
+              </p>
+            </div>
+            <div id='collapseEWaste' class='panel-collapse collapse' role='tabpanel' aria-labelledby='EWasteHeader'>
+              <div class='panel-body layerList' id='EWasteList'></div>
+            </div>
+            <div class='panel-heading' role='tab' id='HouseHazHeader'>
+              <p class='panel-title'>
+                <input type='checkbox' class='leaflet-control-layers-selector'>
+                <img src='img/household.png'> Household Hazardous Waste <a data-toggle='collapse' data-parent='#divMapInfo' href='#collapseHouseHaz' aria-expanded='false' aria-controls='collapseHouseHaz'>Expand</a>
+              </p>
+            </div>
+            <div id='collapseHouseHaz' class='panel-collapse collapse' role='tabpanel' aria-labelledby='HouseHazHeader'>
+              <div class='panel-body layerList' id='HouseHazList'></div>
+            </div>
+            <div class='panel-heading' role='tab' id='VIMHeader'>
+              <p class='panel-title'>
+                <input type='checkbox' class='leaflet-control-layers-selector'>
+                <img src='img/vehicle.png'> Vehicle Testing <a data-toggle='collapse' data-parent='#divMapInfo' href='#collapseVIM' aria-expanded='false' aria-controls='collapseVIM'>Expand</a>
+              </p>
+            </div>
+            <div id='collapseVIM' class='panel-collapse collapse' role='tabpanel' aria-labelledby='VIMHeader'>
+              <div class='panel-body layerList' id='VIMList'></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  	<div id="divMap"></div>
     <script src="assets/js/jquery-1.11.0.min.js"></script>
     <script src="assets/js/jsviews.js"></script>
     <script src="assets/bootstrap-3.1.1/js/bootstrap.min.js"></script>
