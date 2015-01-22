@@ -31,8 +31,8 @@ $.templates({
 	"layerIcon": "<img src='{{:legendIcon}}'>",
 	"layerListTable": "{{if ~layerCount(features) > 0}}<table class='table table-condensed'>{{for features tmpl=~layerListTmplName(abbr) /}}</table>{{/if}}",
 	"testTable": "<tr><td>This</td><td>is a</td><td>table row.</td></tr>",
-	"layerInfo": "<div class='panel-heading' role='tab' id='{{:abbr}}Header'><p class='panel-title'><input type='checkbox' class='leaflet-control-layers-selector'><img src='{{: legendIcon }}'> {{: name }} <a data-toggle='collapse' data-parent='#divMapInfo' href='#collapse{{:abbr}}' aria-expanded='false' aria-controls='collapse{{:abbr}}'>Expand</a></p></div><div id='collapse{{:abbr}}' class='panel-collapse collapse' role='tabpanel' aria-labelledby='{{:abbr}}Header'><div class='panel-body layerList' id='{{:abbr}}List' ></div></div>"
-
+	"layerInfo": "<div class='panel-heading' role='tab' id='{{:abbr}}Header'><label class='panel-title'><input type='checkbox' class='leaflet-control-layers-selector' name='{{:abbr}}'><img src='{{: legendIcon }}'> {{: name }} <a data-toggle='collapse' data-parent='#divMapInfo' href='#collapse{{:abbr}}' aria-expanded='false' aria-controls='collapse{{:abbr}}'>Expand</a></label></div><div id='collapse{{:abbr}}' class='panel-collapse collapse' role='tabpanel' aria-labelledby='{{:abbr}}Header'><div class='panel-body layerList' id='{{:abbr}}List' ></div></div>",
+	"layerInfoDiv": "<div class='layerList' id='{{:abbr}}List'></div>"
 });
 
 $.views.helpers({
@@ -244,12 +244,20 @@ var citizenMap = function(inLayers, inQuery){
 
 	featureLayerInfos = buildFeatureLayerInfos(inLayers);
 
+	function testClick(e){
+		console.log(e.target.name);
+	}
+
 	function buildLayerTitles(){
 		var outLayerTitles = {};
 		for (var j in featureLayerInfos){
 			var layerName = $.render.layerName(featureLayerInfos[j]);
 			outLayerTitles[layerName] = featureLayerInfos[j].testLayer;
+			var layerInfo = $.render.layerInfo(featureLayerInfos[j]);
+			$('#divMapInfo').append(layerInfo);
 		}
+		$('#divMapInfo input').on('click', testClick);
+
 		return outLayerTitles;
 	}
 
@@ -350,12 +358,22 @@ var citizenMap = function(inLayers, inQuery){
 		updateLayers();
 	});
 
-	var layerControl = L.control.layers(baseLayers, buildLayerTitles(),{
-		collapsed: false,
-		position: 'topright'
+	//buildLayerTitles();
+
+	var layerControl = L.control.layers({}, buildLayerTitles(),{
+		collapsed: false//,
+//		position: 'topright'
 	});
 
 	layerControl.addTo(map);
+
+//	layerControl._container.remove();
+
+//	document.getElementById('divMapInfo').appendChild(layerControl.onAdd(map));
+
+//	$('.leaflet-control-layers-overlays label').after($.render())
+
+	//$('#divMapInfo').append(layerControl.onAdd(map));
 
 
 // building this to allow for the location of the map to be reset from the new header form

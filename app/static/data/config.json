@@ -1,17 +1,17 @@
 [
   {
-    "name": "Medical Waste",
+    "name": "Medication Disposal",
     "legendIcon": "img/medicalwaste.png",
-    "fullName": "Medical Waste Disposal Sites",
+    "fullName": "Medication Disposal Sites",
     "url": "http://geoservices.epa.illinois.gov/arcgis/rest/services/Environmental/CitizenPrograms/FeatureServer/0",
     "markerIcon": "img/medicalwastepin.png",
-    "popupTemplate": "<h5>Medical Disposal<h5><h4>{{: properties.Name }}</h4><p>{{: properties.Address }}<br>{{: properties.City }}, IL <a href='{{navigationConverter: geometry.coordinates }}'>Navigate</a></p><p>{{: properties.Telephone }} <a href='tel:{{: properties.Telephone }}'>Call</a></p>",
+    "popupTemplate": "<h5>Medication Disposal<h5><h4>{{: properties.Name }}</h4><p>{{: properties.Address }}<br>{{: properties.City }}, IL <a href='{{navigationConverter: geometry.coordinates }}'>Navigate</a></p><p>{{: properties.Telephone }} <a href='tel:{{: properties.Telephone }}'>Call</a></p>",
     "listTemplate": "<tr><td>{{:distance}} mi</td><td>{{:info.Name}}</td></tr>",
     "markerTitle": "Name",
     "abbr": "MedWaste"
   },
   {
-    "name": "Registered eWaste",
+    "name": "Electronics Recycling",
     "legendIcon": "img/ewaste.png",
     "fullName": "Registered Electronic Waste Disosal Sites",
     "url": "http://geoservices.epa.illinois.gov/arcgis/rest/services/Environmental/CitizenPrograms/FeatureServer/3",
@@ -43,7 +43,7 @@
     "abbr": "HouseHaz"
   },
   {
-    "name": "Vehicle Testing",
+    "name": "Vehicle Emissions Testing",
     "legendIcon": "img/vehicle.png",
     "fullName": "Vehicle Emission Inspection and Testing",
     "url": "http://geoservices.epa.illinois.gov/arcgis/rest/services/Environmental/CitizenPrograms/FeatureServer/2",
