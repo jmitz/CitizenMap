@@ -252,12 +252,14 @@ var citizenMap = function(inLayers, inQuery){
 		var outLayerTitles = {};
 		for (var j in featureLayerInfos){
 			var layerName = $.render.layerName(featureLayerInfos[j]);
-			outLayerTitles[layerName] = featureLayerInfos[j].testLayer;
-			var layerInfo = $.render.layerInfo(featureLayerInfos[j]);
-			$('#divMapInfo').append(layerInfo);
+			var layerInfo = $.render.layerInfoDiv(featureLayerInfos[j]);
+			outLayerTitles[layerName] = {
+				testLayer: featureLayerInfos[j].testLayer,
+				layerInfo: layerInfo				
+			};
+			//$('#divMapInfo').append(layerInfo);
 		}
-		$('#divMapInfo input').on('click', testClick);
-
+		//$('#divMapInfo input').on('click', testClick);
 		return outLayerTitles;
 	}
 
@@ -358,14 +360,14 @@ var citizenMap = function(inLayers, inQuery){
 		updateLayers();
 	});
 
-	//buildLayerTitles();
+	var layerTitles = buildLayerTitles();
 
-	var layerControl = L.control.layers({}, buildLayerTitles(),{
-		collapsed: false//,
-//		position: 'topright'
+	var modifiedLayerControl = L.control.modifiedLayers({}, layerTitles,{
+		collapsed: false,
+		position: 'divMapInfo'
 	});
 
-	layerControl.addTo(map);
+	modifiedLayerControl.addToDiv(map);
 
 //	layerControl._container.remove();
 
@@ -373,7 +375,7 @@ var citizenMap = function(inLayers, inQuery){
 
 //	$('.leaflet-control-layers-overlays label').after($.render())
 
-	//$('#divMapInfo').append(layerControl.onAdd(map));
+//	$('#divMapInfo').append(layerControl.onAdd());
 
 
 // building this to allow for the location of the map to be reset from the new header form
@@ -388,7 +390,9 @@ var citizenMap = function(inLayers, inQuery){
 		featureLayerInfos: featureLayerInfos,
 		updateLayers: updateLayers,
 		mapAttributes: mapAttributes,
-		setLocation: setLocation
+		setLocation: setLocation,
+//		layerControl: layerControl,
+		modifiedLayerControl: modifiedLayerControl
 	};
 };
 
