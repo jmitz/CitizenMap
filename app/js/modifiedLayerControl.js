@@ -196,6 +196,7 @@ L.Control.ModifiedLayers = L.Control.extend({
         input,
         checked = this._map.hasLayer(obj.layer);
 
+
     if (obj.overlay) {
       input = document.createElement('input');
       input.type = 'checkbox';
@@ -212,15 +213,28 @@ L.Control.ModifiedLayers = L.Control.extend({
     var name = document.createElement('span');
     name.innerHTML = ' ' + obj.name;
 
+    infoDiv = document.createElement('div');
+    infoDiv.id = obj.info.abbr + 'List';
+    infoDiv.className = 'layerList';
+    //class='layerList' id='{{:abbr}}
+
+
+
+
+
     label.appendChild(input);
     label.appendChild(name);
 
+
+
+
+
+
+
     var container = obj.overlay ? this._overlaysList : this._baseLayersList;
     container.appendChild(label);
+    container.appendChild(infoDiv);
 
-    // Need to append the obj.info text to the container
-
-//    container.appendChild(obj.info);
 
     return label;
   },

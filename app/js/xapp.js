@@ -29,7 +29,7 @@ $.templates({
 	"navigation": (((navigator.platform.substring(0,2) === 'iP')?'https://maps.apple.com/maps':'https://maps.google.com/maps')+'?saddr={{: fromLat }},{{: fromLng }}&daddr={{: toLat }},{{: toLng }}'),
 	"layerName": "<span id='{{: abbr }}icon'><img src='{{: legendIcon }}'></span><span title='{{: name }}'>{{: name }}</span>",
 	"layerIcon": "<img src='{{:legendIcon}}'>",
-	"layerListTable": "{{if ~layerCount(features) > 0}}<table class='table table-condensed'>{{for features tmpl=~layerListTmplName(abbr) /}}</table>{{/if}}",
+	"layerListTable": "{{if ~layerCount(features) > 0}}<table class='table table-condensed table-hover'>{{for features tmpl=~layerListTmplName(abbr) /}}</table>{{/if}}",
 	"testTable": "<tr><td>This</td><td>is a</td><td>table row.</td></tr>",
 	"layerInfo": "<div class='panel-heading' role='tab' id='{{:abbr}}Header'><label class='panel-title'><input type='checkbox' class='leaflet-control-layers-selector' name='{{:abbr}}'><img src='{{: legendIcon }}'> {{: name }} <a data-toggle='collapse' data-parent='#divMapInfo' href='#collapse{{:abbr}}' aria-expanded='false' aria-controls='collapse{{:abbr}}'>Expand</a></label></div><div id='collapse{{:abbr}}' class='panel-collapse collapse' role='tabpanel' aria-labelledby='{{:abbr}}Header'><div class='panel-body layerList' id='{{:abbr}}List' ></div></div>",
 	"layerInfoDiv": "<div class='layerList' id='{{:abbr}}List'></div>"
@@ -255,11 +255,12 @@ var citizenMap = function(inLayers, inQuery){
 			var layerInfo = $.render.layerInfoDiv(featureLayerInfos[j]);
 			outLayerTitles[layerName] = {
 				testLayer: featureLayerInfos[j].testLayer,
-				layerInfo: layerInfo				
+				layerInfo: {
+					abbr:	featureLayerInfos[j].abbr,
+					count: 0
+				}
 			};
-			//$('#divMapInfo').append(layerInfo);
 		}
-		//$('#divMapInfo input').on('click', testClick);
 		return outLayerTitles;
 	}
 
@@ -312,7 +313,10 @@ var citizenMap = function(inLayers, inQuery){
 					info: features[feature].properties,
 					feature: thisFeature
 				});
+				console.log(thisFeature);
 				markerLayer.addLayers([thisFeature]);
+				featureLayerInfo.features[feature].leafletId = thisFeature._leaflet_id;
+
 			}
 			featureLayerInfo.features.sort(distanceSort);
 			$("#" +featureLayerInfo.abbr + 'List').html($.render.layerListTable(featureLayerInfo));
@@ -392,7 +396,8 @@ var citizenMap = function(inLayers, inQuery){
 		mapAttributes: mapAttributes,
 		setLocation: setLocation,
 //		layerControl: layerControl,
-		modifiedLayerControl: modifiedLayerControl
+		modifiedLayerControl: modifiedLayerControl,
+		currentLeafletId: -1
 	};
 };
 
