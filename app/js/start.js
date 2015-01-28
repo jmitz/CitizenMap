@@ -184,20 +184,20 @@ $(document).on('typeahead:selected', function(e){
   console.log(form);
 });
 
-$(document).on('click', '.feature-row', function(e){
-  console.log(e);
-});
+// $('.feature-row').on('click', function(e){
+//   console.log(e);
+// });
 
-$(document).on('mouseover', '.feature-row', function(e) {
-  if (thisMap.currentLeafletId !== e.currentTarget.id){
-    thisMap.currentLeafletId = e.currentTarget.id;
-    console.log(thisMap.currentLeafletId);
-  }
-});
+// $(document).on('mouseover', '.feature-row', function(e) {
+//   if (thisMap.currentLeafletId !== e.currentTarget.id){
+//     thisMap.currentLeafletId = e.currentTarget.id;
+//     console.log(thisMap.currentLeafletId);
+//   }
+// });
 
-$(document).on('mouseout', '.feature-row', function(e){
-  if (thisMap.currentLeafletId !== e.currentTarget.id){
-    thisMap.currentLeafletId = -1;
-    console.log(thisMap.currentLeafletId);
-  }
-});
+// $(document).on('mouseout', '.feature-row', function(e){
+//   if (thisMap.currentLeafletId !== e.currentTarget.id){
+//     thisMap.currentLeafletId = -1;
+//     console.log(thisMap.currentLeafletId);
+//   }
+// });

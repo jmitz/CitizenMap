@@ -10,7 +10,6 @@ L.Control.ModifiedLayers = L.Control.extend({
   },
 
   initialize: function (baseLayers, overlays, options) {
-    console.log('ModifiedLayers is initializing');
     L.setOptions(this, options);
 
     this._layers = {};
@@ -27,15 +26,11 @@ L.Control.ModifiedLayers = L.Control.extend({
   },
 
   addToDiv: function (map) {
-    console.log('modifiedLayers is addToDiv');
     this._map = map;
 
     var pos = this.getPosition();
     var container = this._container = document.getElementById('divMapInfo');
     this.onAdd(map);
-
-    console.log(container);
-    console.log(pos);
 
     L.DomUtil.addClass(container, 'leaflet-control');
 
@@ -44,7 +39,6 @@ L.Control.ModifiedLayers = L.Control.extend({
 
 
   onAdd: function (map) {
-    console.log('ModifiedLayers is onAdd');
     this._initLayout();
     this._update();
 
@@ -56,28 +50,24 @@ L.Control.ModifiedLayers = L.Control.extend({
   },
 
   onRemove: function (map) {
-    console.log('ModifiedLayers is onRemove');
     map
         .off('layeradd', this._onLayerChange, this)
         .off('layerremove', this._onLayerChange, this);
   },
 
   addBaseLayer: function (layer, name) {
-    console.log('ModifiedLayers is addBaseLayer');
     this._addLayer(layer, name);
     this._update();
     return this;
   },
 
   addOverlay: function (layer, name) {
-    console.log('ModifiedLayers is addOverlay');
     this._addLayer(layer, name, true);
     this._update();
     return this;
   },
 
   removeLayer: function (layer) {
-    console.log('ModifiedLayers is removeLayer');
     var id = L.stamp(layer);
     delete this._layers[id];
     this._update();
@@ -85,7 +75,6 @@ L.Control.ModifiedLayers = L.Control.extend({
   },
 
   _initLayout: function () {
-    console.log('ModifiedLayers is _initLayout');
     var className = 'leaflet-control-layers',
         container = this._container;
         L.DomUtil.addClass(container, className);
@@ -102,8 +91,7 @@ L.Control.ModifiedLayers = L.Control.extend({
     }
 
     var form = this._form = L.DomUtil.create('form', className + '-list');
-    console.log(form);
-
+    
     L.DomUtil.addClass(this._container, 'leaflet-control-layers-expanded');
 
     this._baseLayersList = L.DomUtil.create('div', className + '-base', form);
@@ -111,11 +99,9 @@ L.Control.ModifiedLayers = L.Control.extend({
     this._overlaysList = L.DomUtil.create('div', className + '-overlays', form);
 
     container.appendChild(form);
-    console.log(container);
   },
 
   _addLayer: function (layer, info, name, overlay) {
-    console.log('ModifiedLayers is _addLayer');
     var id = L.stamp(layer);
 
     this._layers[id] = {
@@ -132,7 +118,6 @@ L.Control.ModifiedLayers = L.Control.extend({
   },
 
   _update: function () {
-    console.log('ModifiedLayers is _update');
     if (!this._container) {
       return;
     }
@@ -158,7 +143,6 @@ L.Control.ModifiedLayers = L.Control.extend({
   },
 
   _onLayerChange: function (e) {
-    console.log('ModifiedLayers is _onLayerChange');
     var obj = this._layers[L.stamp(e.layer)];
 
     if (!obj) { return; }
@@ -178,7 +162,6 @@ L.Control.ModifiedLayers = L.Control.extend({
 
   // IE7 bugs out if you create a radio dynamically, so you have to do it this hacky way (see http://bit.ly/PqYLBe)
   _createRadioElement: function (name, checked) {
-    console.log('ModifiedLayers is _createRadioElement');
     var radioHtml = '<input type="radio" class="leaflet-control-layers-selector" name="' + name + '"';
     if (checked) {
       radioHtml += ' checked="checked"';
@@ -218,6 +201,7 @@ L.Control.ModifiedLayers = L.Control.extend({
     infoDiv.className = 'layerList';
     //class='layerList' id='{{:abbr}}
 
+    L.DomEvent.on(infoDiv, 'click', this._onInfoClick, this);
 
 
 
@@ -240,11 +224,30 @@ L.Control.ModifiedLayers = L.Control.extend({
   },
 
   _addInfoDiv: function(obj){
+    console.log('modifiedLayers is _addInfoDiv');
     console.log(obj);
   },
 
+  _getNearestParent: function(node, tag){
+    if (node.parentNode.tagName === tag.toUpperCase()){
+      return node.parentNode;
+    }
+    return this._getNearestParent(node.parentNode, tag);
+  },
+
+  _onInfoClick: function(e){
+    console.log('modifiedLayers is _onInfoClick');
+    console.log(e);
+    this._handlingClick = true;
+
+    var layerId = this._getNearestParent(e.target, 'tr').id;
+    this._map._layers[layerId].openPopup();
+
+    this._handlingClick = false;
+    this._refocusOnMap();
+  },
+
   _onInputClick: function () {
-    console.log('ModifiedLayers is _onInputClick');
     var i, input, obj,
         inputs = this._form.getElementsByTagName('input'),
         inputsLen = inputs.length;
@@ -254,10 +257,8 @@ L.Control.ModifiedLayers = L.Control.extend({
     for (i = 0; i < inputsLen; i++) {
       input = inputs[i];
       obj = this._layers[input.layerId];
-      console.log(obj);
-
+      
       if (input.checked && !this._map.hasLayer(obj.layer)) {
-        console.log(obj.layer);
         this._map.addLayer(obj.layer);
 
       } else if (!input.checked && this._map.hasLayer(obj.layer)) {
