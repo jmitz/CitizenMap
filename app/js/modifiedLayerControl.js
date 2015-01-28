@@ -6,7 +6,8 @@ L.Control.ModifiedLayers = L.Control.extend({
   options: {
     collapsed: true,
     position: 'topright',
-    autoZIndex: true
+    autoZIndex: true,
+    idTag: 'tr'
   },
 
   initialize: function (baseLayers, overlays, options) {
@@ -27,6 +28,7 @@ L.Control.ModifiedLayers = L.Control.extend({
 
   addToDiv: function (map) {
     this._map = map;
+    this._mapHighlight = L.geoJson(null).addTo(this._map);
 
     var pos = this.getPosition();
     var container = this._container = document.getElementById('divMapInfo');
@@ -202,6 +204,8 @@ L.Control.ModifiedLayers = L.Control.extend({
     //class='layerList' id='{{:abbr}}
 
     L.DomEvent.on(infoDiv, 'click', this._onInfoClick, this);
+    L.DomEvent.on(infoDiv, 'mouseover', this._onInfoMouseover, this);
+    L.DomEvent.on(infoDiv, 'mouseout', this._onInfoMouseout, this);
 
 
 
@@ -229,10 +233,29 @@ L.Control.ModifiedLayers = L.Control.extend({
   },
 
   _getNearestParent: function(node, tag){
-    if (node.parentNode.tagName === tag.toUpperCase()){
+    if (tag && node.parentNode.tagName === tag.toUpperCase()){
       return node.parentNode;
     }
     return this._getNearestParent(node.parentNode, tag);
+  },
+
+  _getInfoLatLng: function(node){
+    return L.latLng({lat: node.getAttribute('lat'), lng: node.getAttribute('lng')});
+  },
+
+  _onInfoMouseover: function(e){
+    console.log('modifiedLayers is _onInfoMouseover');
+    if (e.target.className.indexOf('layerList') === -1){
+      var actionNode = this._getNearestParent(e.target, this.options.idTag);
+      var layerId = actionNode.id;
+      var nodeLatLng = this._getInfoLatLng(actionNode);
+      this._mapHighlight.clearLayers().addLayer(L.circleMarker(nodeLatLng, {radius: 20}));
+    }
+  },
+
+  _onInfoMouseout: function(e){
+    console.log('modifiedLayers is _onInfoMouseout');
+    this._mapHighlight.clearLayers();
   },
 
   _onInfoClick: function(e){
@@ -240,8 +263,21 @@ L.Control.ModifiedLayers = L.Control.extend({
     console.log(e);
     this._handlingClick = true;
 
-    var layerId = this._getNearestParent(e.target, 'tr').id;
-    this._map._layers[layerId].openPopup();
+    if (e.target.className.indexOf('layerList') === -1){
+      var actionNode = this._getNearestParent(e.target, this.options.idTag);
+      var layerId = actionNode.id;
+      if(!this._map._layers[layerId]){
+        this._map.addOneTimeEventListener('zoomend', function(){
+          this._map._layers[layerId].openPopup();
+        }, this);
+        this._map.panTo(this._getInfoLatLng(actionNode));
+        this._map.setZoom(11);
+      }
+      else {
+        this._map.panTo(this._getInfoLatLng(actionNode));
+        this._map._layers[layerId].openPopup();
+      }
+    }
 
     this._handlingClick = false;
     this._refocusOnMap();

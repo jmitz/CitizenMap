@@ -364,6 +364,10 @@ var citizenMap = function(inLayers, inQuery){
 		updateLayers();
 	});
 
+	map.on('zoom', function(){
+		//Modify layer Info to only show those location which are in the map boundaries AND in the identified zone.
+	})
+
 	var layerTitles = buildLayerTitles();
 
 	var modifiedLayerControl = L.control.modifiedLayers({}, layerTitles,{

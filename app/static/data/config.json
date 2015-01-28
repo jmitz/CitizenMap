@@ -6,7 +6,7 @@
     "url": "http://geoservices.epa.illinois.gov/arcgis/rest/services/Environmental/CitizenPrograms/FeatureServer/0",
     "markerIcon": "img/medicalwastepin.png",
     "popupTemplate": "<h5>Medication Disposal<h5><h4>{{: properties.Name }}</h4><p>{{: properties.Address }}<br>{{: properties.City }}, IL <a href='{{navigationConverter: geometry.coordinates }}'>Navigate</a></p><p>{{: properties.Telephone }} <a href='tel:{{: properties.Telephone }}'>Call</a></p>",
-    "listTemplate": "<tr class='feature-row' id='{{:leafletId}}'><td>{{:distance}} mi</td><td>{{:info.Name}}</td></tr>",
+    "listTemplate": "<tr class='feature-row' id='{{:leafletId}}' lat='{{:feature._latlng.lat}}' lng='{{:feature._latlng.lng}}'><td>{{:distance}} mi</td><td>{{:info.Name}}</td></tr>",
     "markerTitle": "Name",
     "abbr": "MedWaste"
   },
@@ -17,7 +17,7 @@
     "url": "http://geoservices.epa.illinois.gov/arcgis/rest/services/Environmental/CitizenPrograms/FeatureServer/3",
     "markerIcon": "img/ewastepin.png",
     "popupTemplate": "<h5>eWaste<h5><h4>{{: properties.Company_Na }}</h4><p>{{: properties.Address }}<br>{{: properties.City }}, IL <a href='{{navigationConverter: geometry.coordinates }}'>Navigate</a></p><p>{{: properties.Phone }} <a href='tel:{{: properties.Phone }}'>Call</a></p>",
-    "listTemplate": "<tr class='feature-row' id='{{:leafletId}}'><td>{{:distance}} mi</td><td>{{:info.Company_Na}}</td></tr>",
+    "listTemplate": "<tr class='feature-row' id='{{:leafletId}}' lat='{{:feature._latlng.lat}}' lng='{{:feature._latlng.lng}}'><td>{{:distance}} mi</td><td>{{:info.Company_Na}}</td></tr>",
     "markerTitle": "Company_Na",
     "abbr": "EWaste"
   },
@@ -38,7 +38,7 @@
       }
     },
     "popupTemplate": "<h5>Household Hazardous Waste Disposal {{: properties.title }}<h5><h4>{{: properties.sponsor }}</h4><p>{{: properties.address }}<br>{{: properties.city }}, IL <a href='{{navigationConverter: geometry.coordinates }}'>Navigate</a></p>",
-    "listTemplate": "<tr class='feature-row' id='{{:leafletId}}'><td>{{:distance}} mi</td><td>{{:info.sponsor}}<br>{{:info.address}}</td></tr>",
+    "listTemplate": "<tr class='feature-row' id='{{:leafletId}}' lat='{{:feature._latlng.lat}}' lng='{{:feature._latlng.lng}}'><td>{{:distance}} mi</td><td>{{:info.sponsor}}<br>{{:info.address}}</td></tr>",
     "markerTitle": "Name",
     "abbr": "HouseHaz"
   },
@@ -61,7 +61,7 @@
       }
     },
     "popupTemplate": "<h5>{{VIMDecode: properties.type }}<br>Vehicle Testing Station<h5><h4>{{: properties.name }}</h4><p>{{: properties.address }}<br>{{: properties.city }}, IL <a href='{{navigationConverter: geometry.coordinates }}'>Navigate</a></p><p>{{: properties.telephone }} <a href='tel:{{: properties.telephone }}'>Call</a></p>",
-    "listTemplate": "<tr class='feature-row' id='{{:leafletId}}'><td>{{:distance}} mi</td><td><small>{{VIMDecode: info.type}}</small><br>{{:info.name}}</td></tr>",
+    "listTemplate": "<tr class='feature-row' id='{{:leafletId}}' lat='{{:feature._latlng.lat}}' lng='{{:feature._latlng.lng}}'><td>{{:distance}} mi</td><td><small>{{VIMDecode: info.type}}</small><br>{{:info.name}}</td></tr>",
     "markerTitle": "name",
     "abbr": "VIM"
   }
