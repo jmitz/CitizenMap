@@ -135,7 +135,7 @@ L.Control.ModifiedLayers = L.Control.extend({
       obj = this._layers[i];
       this._addItem(obj);
 
-      this._addInfoDiv(obj);
+//      this._addInfoDiv(obj);
 
       overlaysPresent = overlaysPresent || obj.overlay;
       baseLayersPresent = baseLayersPresent || !obj.overlay;
@@ -207,17 +207,8 @@ L.Control.ModifiedLayers = L.Control.extend({
     L.DomEvent.on(infoDiv, 'mouseover', this._onInfoMouseover, this);
     L.DomEvent.on(infoDiv, 'mouseout', this._onInfoMouseout, this);
 
-
-
-
     label.appendChild(input);
     label.appendChild(name);
-
-
-
-
-
-
 
     var container = obj.overlay ? this._overlaysList : this._baseLayersList;
     container.appendChild(label);
@@ -227,10 +218,10 @@ L.Control.ModifiedLayers = L.Control.extend({
     return label;
   },
 
-  _addInfoDiv: function(obj){
-    console.log('modifiedLayers is _addInfoDiv');
-    console.log(obj);
-  },
+//  _addInfoDiv: function(obj){
+//    console.log('modifiedLayers is _addInfoDiv');
+//    console.log(obj);
+//  },
 
   _getNearestParent: function(node, tag){
     if (tag && node.parentNode.tagName === tag.toUpperCase()){
@@ -244,7 +235,6 @@ L.Control.ModifiedLayers = L.Control.extend({
   },
 
   _onInfoMouseover: function(e){
-    console.log('modifiedLayers is _onInfoMouseover');
     if (e.target.className.indexOf('layerList') === -1){
       var actionNode = this._getNearestParent(e.target, this.options.idTag);
       var layerId = actionNode.id;
@@ -254,13 +244,10 @@ L.Control.ModifiedLayers = L.Control.extend({
   },
 
   _onInfoMouseout: function(e){
-    console.log('modifiedLayers is _onInfoMouseout');
     this._mapHighlight.clearLayers();
   },
 
   _onInfoClick: function(e){
-    console.log('modifiedLayers is _onInfoClick');
-    console.log(e);
     this._handlingClick = true;
 
     if (e.target.className.indexOf('layerList') === -1){

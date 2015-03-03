@@ -1,9 +1,9 @@
 // citizenMap.js
 
-var layers;
+var configInfo;
 
 $.getJSON('data/config.json', function (data){
-	layers = data;
+	configInfo = data;
 });
 
 function milesToMeters(inMiles){
@@ -76,9 +76,10 @@ function validateInput(inValues){
 
 	mapInfo.mapCircle = L.circle(
 		mapInfo.mapCenter, 
-		mapInfo.distance,{
-			fill: false
-	});
+		mapInfo.distance,
+		configInfo.mapCircleProperties
+	);
+
 	mapInfo.mapBounds = mapInfo.mapCircle.getBounds();
 	mapInfo.featureList = inValues.featureList;
 	return mapInfo;
@@ -95,8 +96,8 @@ function parseQuery(inQuery){
 	if (typeof(inQuery.Miles)!=='undefined'){
 		returnValue.miles = Number(inQuery.Miles);
 	}
-	for (var layer in layers){
-		if(inQuery[layers[layer].abbr]==='true'){
+	for (var layer in configInfo.layers){
+		if(inQuery[configInfo.layers[layer].abbr]==='true'){
 			returnValue.featureList.push(layer);
 		}
 	}
@@ -104,7 +105,7 @@ function parseQuery(inQuery){
 	return returnValue;
 }
 
-var citizenMap = function(inLayers, inQuery){
+var citizenMap = function(inConfig, inQuery){
 	var mapAttributes = validateInput(parseQuery(inQuery));
 	var div = 'divMap';
 
@@ -119,12 +120,7 @@ var citizenMap = function(inLayers, inQuery){
 	var zoomslider = L.control.zoomslider();
 	zoomslider.addTo(map);
 
-	var locationIcon = L.icon({
-		iconUrl: 'img/location.png',
-		iconRetinaUrl: 'img/location.png',
-		iconSize: [30, 30],
-		iconAnchor: [15,15]
-	});
+	var locationIcon = L.icon(inConfig.locationIconProperties);
 
 	/* Basemap Layers */
 	var baseStreetMap = L.esri.Layers.basemapLayer("Topographic");
@@ -242,10 +238,10 @@ var citizenMap = function(inLayers, inQuery){
 		return returnInfoArray;
 	};
 
-	featureLayerInfos = buildFeatureLayerInfos(inLayers);
+	featureLayerInfos = buildFeatureLayerInfos(inConfig.layers);
 
 	function testClick(e){
-		console.log(e.target.name);
+//		console.log(e.target.name);
 	}
 
 	function buildLayerTitles(){
@@ -313,7 +309,7 @@ var citizenMap = function(inLayers, inQuery){
 					info: features[feature].properties,
 					feature: thisFeature
 				});
-				console.log(thisFeature);
+//				console.log(thisFeature);
 				markerLayer.addLayers([thisFeature]);
 				featureLayerInfo.features[feature].leafletId = thisFeature._leaflet_id;
 
@@ -330,7 +326,7 @@ var citizenMap = function(inLayers, inQuery){
 			emptyArray(featureLayerInfos[j].features);
 			$("#" +featureLayerInfos[j].abbr + 'List').html('');
 			if (map.hasLayer(featureLayerInfos[j].testLayer)){
-				console.log('update layer ' + featureLayerInfos[j].name);
+	//			console.log('update layer ' + featureLayerInfos[j].name);
 	//      loadFeatureLayer(featureLayerInfos[j], markers);
 				loadFeatures(featureLayerInfos[j], markers);
 			}
@@ -358,7 +354,7 @@ var citizenMap = function(inLayers, inQuery){
 	map.on('overlayremove', function(e){
 		for (var j in featureLayerInfos){
 			if (e.layer === featureLayerInfos[j].testLayer){
-				console.log('Removing Layer ' + featureLayerInfos[j].name);
+//				console.log('Removing Layer ' + featureLayerInfos[j].name);
 			}
 		}
 		updateLayers();
@@ -366,7 +362,7 @@ var citizenMap = function(inLayers, inQuery){
 
 	map.on('zoom', function(){
 		//Modify layer Info to only show those location which are in the map boundaries AND in the identified zone.
-	})
+	});
 
 	var layerTitles = buildLayerTitles();
 
@@ -406,5 +402,5 @@ var citizenMap = function(inLayers, inQuery){
 };
 
 $(document).one('ajaxStop', function(){
-	thisMap = citizenMap(layers, QueryString);
+	thisMap = citizenMap(configInfo, QueryString);
 });

@@ -1,4 +1,4 @@
-[
+{"layers":[
   {
     "name": "Medication Disposal",
     "legendIcon": "img/medicalwaste.png",
@@ -65,4 +65,16 @@
     "markerTitle": "name",
     "abbr": "VIM"
   }
-]
+],
+"mapCircleProperties": {
+  "fill": true,
+  "weight": 2,
+  "fillOpacity": 0.04
+},
+"locationIconProperties": {
+  "iconUrl": "img/location.png",
+  "iconRetinaUrl": "img/location.png",
+  "iconSize": [18,18],
+  "iconAnchor": [9,9]
+}
+}
