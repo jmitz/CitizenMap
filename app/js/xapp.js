@@ -267,6 +267,7 @@ var citizenMap = function(inConfig, inQuery){
 		map.addLayer(mapAttributes.mapCircle);
 	}
 	function reLocateMap(inMapAttributes){
+		console.log(inMapAttributes);
 		if (inMapAttributes.validMapCenter && mapAttributes.mapCenter.distanceTo(inMapAttributes.mapCenter)>100){
 			mapAttributes.mapCenter = inMapAttributes.mapCenter;
 			mapAttributes.mapCircle.setLatLng(mapAttributes.mapCenter);
@@ -360,8 +361,21 @@ var citizenMap = function(inConfig, inQuery){
 		updateLayers();
 	});
 
-	map.on('zoom', function(){
-		//Modify layer Info to only show those location which are in the map boundaries AND in the identified zone.
+	map.on('moveend', function(){
+		var mapBounds = map.getBounds();
+		if (!mapBounds.contains(mapAttributes.mapCenter)) {
+			console.log('Moving Map');
+
+			var newMapAttributes = {
+				mapCenter: mapBounds.getCenter(),
+				mapBounds: mapBounds,
+				distance: mapBounds._southWest.distanceTo(mapBounds._northEast)/4,
+				validDistance: true,
+				validMapCenter: true
+			};
+
+			reLocateMap(newMapAttributes);
+		}
 	});
 
 	var layerTitles = buildLayerTitles();
