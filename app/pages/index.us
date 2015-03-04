@@ -63,6 +63,7 @@
     <script src="http://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
     <script src="http://cdn-geoweb.s3.amazonaws.com/esri-leaflet-clustered-feature-layer/1.0.0-rc.2/esri-leaflet-clustered-feature-layer.js"></script>
     <script src="assets/rrose/rrose-src.js"></script>
+    <script src="assets/js/serviceLocatorForm.js"></script>
     <script type="text/javascript" src="<%= js %>"></script>
   </body>
 </html
