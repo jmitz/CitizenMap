@@ -267,7 +267,7 @@ var citizenMap = function(inConfig, inQuery){
 		map.addLayer(mapAttributes.mapCircle);
 	}
 	function reLocateMap(inMapAttributes){
-		console.log(inMapAttributes);
+//		console.log(inMapAttributes);
 		if (inMapAttributes.validMapCenter && mapAttributes.mapCenter.distanceTo(inMapAttributes.mapCenter)>100){
 			mapAttributes.mapCenter = inMapAttributes.mapCenter;
 			mapAttributes.mapCircle.setLatLng(mapAttributes.mapCenter);
@@ -364,7 +364,7 @@ var citizenMap = function(inConfig, inQuery){
 	map.on('moveend', function(){
 		var mapBounds = map.getBounds();
 		if (!mapBounds.contains(mapAttributes.mapCenter)) {
-			console.log('Moving Map');
+//			console.log('Moving Map');
 
 			var newMapAttributes = {
 				mapCenter: mapBounds.getCenter(),

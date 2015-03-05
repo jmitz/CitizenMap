@@ -88,3 +88,17 @@ function buildMapUrl(newMap){
     }
   });
 }
+
+$(window).resize(function(){
+  var availableHeight = $(window).height();
+  var currentWidth = $(window).width();
+  var pageTopHeight = $('#header').height();
+  $('.mapHolder').height(availableHeight-pageTopHeight);
+});
+
+$(window).resize();
+
+$(document).on('typeahead:selected', function(e){
+  form = $(e.target).closest('form');
+//  console.log(form);
+});
