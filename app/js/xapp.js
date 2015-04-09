@@ -60,7 +60,7 @@ function validateInput(inValues){
 		mapInfo.validMapCenter = true;
 	}
 	else {
-		mapInfo.validMapcenter = false;
+		mapInfo.validMapCenter = false;
 		mapInfo.mapCenter = L.latLng([40, -89.5]);
 	}
 
@@ -260,22 +260,30 @@ var citizenMap = function(inConfig, inQuery){
 		return outLayerTitles;
 	}
 
+	function displayMapCircle(){
+		if (mapAttributes.validDistance && !map.hasLayer(mapAttributes.mapCircle)){
+			map.addLayer(mapAttributes.mapCircle);	
+		}
+	}
+
 	function locateMap(){
 		map.fitBounds(mapAttributes.mapBounds);
 		mapAttributes.locationMarker = L.marker(mapAttributes.mapCenter, {icon: locationIcon});
 		map.addLayer(mapAttributes.locationMarker);
-		map.addLayer(mapAttributes.mapCircle);
+		displayMapCircle();
 	}
 	function reLocateMap(inMapAttributes){
-//		console.log(inMapAttributes);
-		if (inMapAttributes.validMapCenter && mapAttributes.mapCenter.distanceTo(inMapAttributes.mapCenter)>100){
+		if ((inMapAttributes || !mapAttributes.validMapCenter) && mapAttributes.mapCenter.distanceTo(inMapAttributes.mapCenter)>100){
 			mapAttributes.mapCenter = inMapAttributes.mapCenter;
 			mapAttributes.mapCircle.setLatLng(mapAttributes.mapCenter);
+			mapAttributes.validMapCenter = inMapAttributes.validMapCenter;
 		}
 
 		if (inMapAttributes.distance !== mapAttributes.distance){
 			mapAttributes.distance = inMapAttributes.distance;
-			mapAttributes.mapCircle.setRadius(mapAttributes.distance);
+			mapAttributes.mapCircle.setRadius(inMapAttributes.distance);
+			mapAttributes.validDistance = inMapAttributes.validDistance;
+			displayMapCircle();
 		}
 
 		mapAttributes.locationMarker.setLatLng(mapAttributes.mapCenter);
@@ -310,7 +318,6 @@ var citizenMap = function(inConfig, inQuery){
 					info: features[feature].properties,
 					feature: thisFeature
 				});
-//				console.log(thisFeature);
 				markerLayer.addLayers([thisFeature]);
 				featureLayerInfo.features[feature].leafletId = thisFeature._leaflet_id;
 
@@ -320,6 +327,17 @@ var citizenMap = function(inConfig, inQuery){
 		});
 	}
 
+	function changeRatio(val1, val2){
+		var returnValues = {
+			ratio: Math.abs(val1 - val2)/val1,
+			zoomOut: false
+		};
+		if (returnValues.ratio > 0.5){
+			returnValues.zoomOut =  (val1 < val2);
+		}
+		return returnValues;
+	}
+
 	function updateLayers(){
 		markers._unspiderfy();
 		markers.clearLayers();
@@ -327,8 +345,6 @@ var citizenMap = function(inConfig, inQuery){
 			emptyArray(featureLayerInfos[j].features);
 			$("#" +featureLayerInfos[j].abbr + 'List').html('');
 			if (map.hasLayer(featureLayerInfos[j].testLayer)){
-	//			console.log('update layer ' + featureLayerInfos[j].name);
-	//      loadFeatureLayer(featureLayerInfos[j], markers);
 				loadFeatures(featureLayerInfos[j], markers);
 			}
 		}
@@ -355,7 +371,6 @@ var citizenMap = function(inConfig, inQuery){
 	map.on('overlayremove', function(e){
 		for (var j in featureLayerInfos){
 			if (e.layer === featureLayerInfos[j].testLayer){
-//				console.log('Removing Layer ' + featureLayerInfos[j].name);
 			}
 		}
 		updateLayers();
@@ -363,19 +378,27 @@ var citizenMap = function(inConfig, inQuery){
 
 	map.on('moveend', function(){
 		var mapBounds = map.getBounds();
-		if (!mapBounds.contains(mapAttributes.mapCenter)) {
-//			console.log('Moving Map');
-
-			var newMapAttributes = {
-				mapCenter: mapBounds.getCenter(),
-				mapBounds: mapBounds,
-				distance: mapBounds._southWest.distanceTo(mapBounds._northEast)/4,
-				validDistance: true,
-				validMapCenter: true
-			};
-
+		var mapDistance = mapBounds._southWest.distanceTo(mapBounds._northEast)/4;
+		var distanceChange = changeRatio(mapAttributes.distance, mapDistance);
+		var newMapAttributes = {
+			mapCenter: mapAttributes.mapCenter,
+			mapBounds: mapAttributes.mapBounds,
+			distance: mapAttributes.distance,
+			validDistance: mapAttributes.validDistance,
+			validMapCenter: mapAttributes.validMapCenter
+		};
+		if (!mapBounds.contains(mapAttributes.mapCenter) && !mapAttributes.validMapCenter) {
+			newMapAttributes.mapCenter = mapBounds.getCenter();
+			newMapAttributes.mapBounds = mapBounds;
+			newMapAttributes.distance = mapDistance;
+			distanceChange.zoomOut = false;
 			reLocateMap(newMapAttributes);
 		}
+		if(distanceChange.zoomOut && !mapAttributes.validDistance){
+			newMapAttributes.distance = mapDistance;
+			reLocateMap(newMapAttributes);
+		}
+
 	});
 
 	var layerTitles = buildLayerTitles();
@@ -386,15 +409,6 @@ var citizenMap = function(inConfig, inQuery){
 	});
 
 	modifiedLayerControl.addToDiv(map);
-
-//	layerControl._container.remove();
-
-//	document.getElementById('divMapInfo').appendChild(layerControl.onAdd(map));
-
-//	$('.leaflet-control-layers-overlays label').after($.render())
-
-//	$('#divMapInfo').append(layerControl.onAdd());
-
 
 // building this to allow for the location of the map to be reset from the new header form
 	function setLocation(inMapTemplateParms){
@@ -409,7 +423,6 @@ var citizenMap = function(inConfig, inQuery){
 		updateLayers: updateLayers,
 		mapAttributes: mapAttributes,
 		setLocation: setLocation,
-//		layerControl: layerControl,
 		modifiedLayerControl: modifiedLayerControl,
 		currentLeafletId: -1
 	};
