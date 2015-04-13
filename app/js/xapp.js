@@ -27,12 +27,13 @@ function emptyArray(array){
 $.templates({
 	//iPhone, iPad Navigation use apple.com All Others use google.com 
 	"navigation": (((navigator.platform.substring(0,2) === 'iP')?'https://maps.apple.com/maps':'https://maps.google.com/maps')+'?saddr={{: fromLat }},{{: fromLng }}&daddr={{: toLat }},{{: toLng }}'),
-	"layerName": "<span id='{{: abbr }}icon'><img src='{{: legendIcon }}'></span><span title='{{: name }}'>{{: name }}</span>",
+	"layerName": "<span id='{{: abbr }}icon'><img src='{{: legendIcon }}'></span><span title='{{: name }}'>{{: name }} (<span id= 'count{{: abbr}}' >0</span>)</span>",
 	"layerIcon": "<img src='{{:legendIcon}}'>",
 	"layerListTable": "{{if ~layerCount(features) > 0}}<table class='table table-condensed table-hover'>{{for features tmpl=~layerListTmplName(abbr) /}}</table>{{/if}}",
 	"testTable": "<tr><td>This</td><td>is a</td><td>table row.</td></tr>",
 	"layerInfo": "<div class='panel-heading' role='tab' id='{{:abbr}}Header'><label class='panel-title'><input type='checkbox' class='leaflet-control-layers-selector' name='{{:abbr}}'><img src='{{: legendIcon }}'> {{: name }} <a data-toggle='collapse' data-parent='#divMapInfo' href='#collapse{{:abbr}}' aria-expanded='false' aria-controls='collapse{{:abbr}}'>Expand</a></label></div><div id='collapse{{:abbr}}' class='panel-collapse collapse' role='tabpanel' aria-labelledby='{{:abbr}}Header'><div class='panel-body layerList' id='{{:abbr}}List' ></div></div>",
-	"layerInfoDiv": "<div class='layerList' id='{{:abbr}}List'></div>"
+	"layerInfoDiv": "<div class='layerList' id='{{:abbr}}List'></div>",
+	"layerCountSpanId":"#count{{: abbr}}"
 });
 
 $.views.helpers({
@@ -302,7 +303,6 @@ var citizenMap = function(inConfig, inQuery){
 		zoomToBoundsOnClick: true
 	}).addTo(map);
 
-
 	function loadFeatures(featureLayerInfo, markerLayer){
 		var queryTask = L.esri.Tasks.query(featureLayerInfo.url)
 		.within(mapAttributes.mapBounds);
@@ -324,6 +324,7 @@ var citizenMap = function(inConfig, inQuery){
 			}
 			featureLayerInfo.features.sort(distanceSort);
 			$("#" +featureLayerInfo.abbr + 'List').html($.render.layerListTable(featureLayerInfo));
+			$($.render.layerCountSpanId(featureLayerInfo)).html(featureLayerInfo.features.length);
 		});
 	}
 
@@ -347,6 +348,7 @@ var citizenMap = function(inConfig, inQuery){
 			if (map.hasLayer(featureLayerInfos[j].testLayer)){
 				loadFeatures(featureLayerInfos[j], markers);
 			}
+			
 		}
 	}
 
@@ -371,6 +373,7 @@ var citizenMap = function(inConfig, inQuery){
 	map.on('overlayremove', function(e){
 		for (var j in featureLayerInfos){
 			if (e.layer === featureLayerInfos[j].testLayer){
+				$($.render.layerCountSpanId(featureLayerInfos[j])).html(0);
 			}
 		}
 		updateLayers();
