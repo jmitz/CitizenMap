@@ -27,7 +27,7 @@ function emptyArray(array){
 $.templates({
 	//iPhone, iPad Navigation use apple.com All Others use google.com 
 	"navigation": (((navigator.platform.substring(0,2) === 'iP')?'https://maps.apple.com/maps':'https://maps.google.com/maps')+'?saddr={{: fromLat }},{{: fromLng }}&daddr={{: toLat }},{{: toLng }}'),
-	"layerName": "<span id='{{: abbr }}icon'><img src='{{: legendIcon }}'></span><span title='{{: name }}'>{{: name }} (<span id= 'count{{: abbr}}' >0</span>)</span>",
+	"layerName": "<span id='{{: abbr }}icon'><img src='{{: legendIcon }}'></span><span title='{{: name }}'>{{: name }} <span id= 'count{{: abbr}}' ></span></span>",
 	"layerIcon": "<img src='{{:legendIcon}}'>",
 	"layerListTable": "{{if ~layerCount(features) > 0}}<table class='table table-condensed table-hover'>{{for features tmpl=~layerListTmplName(abbr) /}}</table>{{/if}}",
 	"testTable": "<tr><td>This</td><td>is a</td><td>table row.</td></tr>",
@@ -324,7 +324,7 @@ var citizenMap = function(inConfig, inQuery){
 			}
 			featureLayerInfo.features.sort(distanceSort);
 			$("#" +featureLayerInfo.abbr + 'List').html($.render.layerListTable(featureLayerInfo));
-			$($.render.layerCountSpanId(featureLayerInfo)).html(featureLayerInfo.features.length);
+			$($.render.layerCountSpanId(featureLayerInfo)).html('(' + featureLayerInfo.features.length + ')');
 		});
 	}
 
@@ -348,7 +348,7 @@ var citizenMap = function(inConfig, inQuery){
 			if (map.hasLayer(featureLayerInfos[j].testLayer)){
 				loadFeatures(featureLayerInfos[j], markers);
 			}
-			
+
 		}
 	}
 
@@ -373,7 +373,7 @@ var citizenMap = function(inConfig, inQuery){
 	map.on('overlayremove', function(e){
 		for (var j in featureLayerInfos){
 			if (e.layer === featureLayerInfos[j].testLayer){
-				$($.render.layerCountSpanId(featureLayerInfos[j])).html(0);
+				$($.render.layerCountSpanId(featureLayerInfos[j])).html('');
 			}
 		}
 		updateLayers();
