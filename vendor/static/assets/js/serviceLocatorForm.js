@@ -6,7 +6,7 @@
 /*  Services Locator Functions */
 
 var reIllinois = /, Illinois, (USA|United States)/;
-var suggestionUrlTemplate = $.templates("http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/suggest?text={{:inText}}&location={{:encLngLat}}&distance={{:distance}}&f=json");
+var suggestionUrlTemplate = $.templates("http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/suggest?text={{:inText}}&searchExtent={{:searchExtent}}&f=json");
 var findUrlTemplate = $.templates("http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find?text={{:location}}&magicKey={{:magicKey}}&f=json");
 var mapUrlTemplate = $.templates("index.html?Lat={{:lat}}&Lon={{:lng}}&Miles={{:miles}}&Name={{:name}}&{{:dataTypeString}}");
 
@@ -29,8 +29,7 @@ function getSuggestions(inText, callBack){
   }
   var parms = {
     inText: encodeURIComponent(inText),
-    encLngLat: encodeURIComponent('-89.5,39.8'),
-    distance: 320000
+    searchExtent: "-91.6,36.9,-87.4,42.5"
   };
   var url = suggestionUrlTemplate.render(parms);
   jQuery.ajax(url, {
